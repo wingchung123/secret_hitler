@@ -1,4 +1,4 @@
-#Secret Hitler Game
+# Secret Hitler Game
 
 Uses containers, express & AWS resources (back-end)
 
@@ -7,7 +7,7 @@ Uses containers, express & AWS resources (back-end)
 Sublime Markdown -> Markdown Preview Package, alt-m to preview
 
 
-##Useful docker commands 
+## Useful docker commands 
 [Docker Guide](https://nodejs.org/en/docs/guides/nodejs-docker-webapp/)
 
 
@@ -26,7 +26,7 @@ Sublime Markdown -> Markdown Preview Package, alt-m to preview
 
 
 
-##Useful node commands
+## Useful node commands
 
 `npm start`
 
