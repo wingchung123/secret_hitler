@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Secret Hitler Board Game</title>
+		<!-- <link rel='stylesheet' href='/stylesheets/style.css' /> -->
+		<link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+		<script src="/bower_components/jquery/dist/jquery.min.js"></script>
+		<script src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+	</head>
+
+	<body>
+		<nav class="navbar navbar-expand-sm navbar-dark" style= "background-color: #e5644a;">
+			<a class="navbar-brand" href="#">
+				<img src="/images/header.jpg" width="60" height="40" alt="">
+			</a>
+			<ul class="navbar-nav">
+				<li class="nav-item active">
+					<a class="nav-link" href="/">Home</a>
+				</li>
+			</ul>
+		</nav><br>
+
+		<!-- Header -->
+		<div class="container mt-3 mb-4 text-center">
+			<h2> Welcome <%= player_name %>! Your role is 
+				<% if (role == 'Liberal') { %>
+					<span class="text-primary">
+				<% } else { %>
+					<span class="text-danger">
+				<% } %>
+				<%= role %></span></h2>
+		</div>
+		<!-- Body -->
+		<div class="container my-3 text-center">
+
+			<% switch (role) {
+				case 'Liberal' : %>
+				<div class="row my-3 mb-4">
+					<div class="col-sm-4"></div>
+					<div class="col-sm-4">
+						<img src="/images/liberal.png" width="150vw" height="200vh">
+					</div>
+				</div>
+
+				<div class="row my-3">
+					<div class="col-sm-1"></div>
+					<div class="col-sm-1"></div>
+					<div class="col-sm-8">
+						<p class="my-2">2 ways to win:</p>
+						<ol class="text-left">
+							<li>Five Liberal Policies are enacted. <strong>OR</strong></li>
+							<li>Hitler is assassinated.</li>
+						</ol>
+					</div>
+				</div>
+				
+				<% break; case 'Facist' : %>
+				<div class="row my-3 mb-4">
+					<div class="col-sm-4"></div>
+					<div class="col-sm-4">
+						<img src="/images/facist.png" width="150vw" height="200vh">
+					</div>
+				</div>
+
+				<div class="row my-3">
+					<div class="col-sm-1"></div>
+					<div class="col-sm-1"></div>
+					<div class="col-sm-8">
+						<p class="my-2">2 ways to win:</p>
+						<ol class="text-left">
+							<li>Six Fascist Policies are enacted. <strong>OR</strong></li>
+							<li>Hitler is elected Chancellor any time <strong>after</strong> the third Fascist Policy has been enacted.</li>
+						</ol>
+					</div>
+				</div>
+
+				<% break; case 'Hitler' : %>
+				<div class="row my-3 mb-4">
+					<div class="col-sm-4"></div>
+					<div class="col-sm-4">
+						<img src="/images/hitler.png" width="150vw" height="200vh">
+					</div>
+				</div>
+
+				<div class="row my-3">
+					<div class="col-sm-1"></div>
+					<div class="col-sm-1"></div>
+					<div class="col-sm-8">
+						<p class="my-2">2 ways to win:</p>
+						<ol class="text-left">
+							<li>Six Fascist Policies are enacted. <strong>OR</strong></li>
+							<li>Hitler (you) are elected Chancellor any time <strong>after</strong> the third Fascist Policy has been enacted.</li>
+						</ol>
+					</div>
+				</div>
+				<% break;} %>
+
+				<div class="row my-3">
+					<div class="col-sm-1"></div>
+					<div class="col-sm-1"></div>
+					<div class="col-sm-8">
+						<p class="my-2">Game Details:</p>
+						<ol class="text-left">
+							<li>There are <span class="text-danger"><%= number_of_facists %> facist </span>(including Hitler) and <span class="text-primary"><%= number_of_liberals %> liberals</span>.</li>
+							<li>There are 6 Liberal Policies and 11 Facist policies at the start of the game.</li>
+							<% if (number_of_players < 7) { %>
+							<li>Hitler & Facist(s) will know who each other are.
+							<% } else { %>
+							<li>Facists will know who Hitler is but Hitler will <strong>not</strong> know who the facist(s) are.
+							<% } %>
+						</ol>
+					</div>
+				</div>
+				<a href="/game/start_game" class="btn btn-success col-sm-6" role="button">Lets Play!</a>
+		</div>
+	</body>
+</html> 
+<!-- test -->

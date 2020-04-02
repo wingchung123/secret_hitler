@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Secret Hitler Board Game</title>
+		<!-- <link rel='stylesheet' href='/stylesheets/style.css' /> -->
+		<link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+		<script src="/bower_components/jquery/dist/jquery.min.js"></script>
+		<script src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+	</head>
+
+	<body>
+		<nav class="navbar navbar-expand-sm navbar-dark" style= "background-color: #e5644a;">
+			<a class="navbar-brand" href="#">
+				<img src="/images/header.jpg" width="60" height="40" alt="">
+			</a>
+			<ul class="navbar-nav">
+				<li class="nav-item active">
+					<a class="nav-link" href="/">Home</a>
+				</li>
+			</ul>
+		</nav>
+
+		<div class="container-fluid text-center" style="background-color: #ff6650;">
+			<img src="/images/logo1.png" width="500vw" height="300vh" alt="">
+		</div>
+
+
+		<div class="container text-center">
+			<% if (typeof status_code !== 'undefined') { %>
+				<% switch (status_code) {
+				case '110' : %>
+					<div class="alert alert-danger mt-3 mb-0">
+						<strong>Error:</strong> Name already taken.
+					</div>
+				<% break; case '111' : %>
+					<div class="alert alert-danger mt-3 mb-0">
+						<strong>Error:</strong> No more players allowed.
+					</div>
+				<% break; case '112' : %>
+					<div class="alert alert-danger mt-3 mb-0">
+						<strong>Error:</strong> Could not add player. Please try again.
+					</div>
+				<% break;} %>
+			<% } %>
+
+
+			<form action="/createPlayer" method="post">
+			<div class="row my-3">
+				<div class="col-sm-4"></div>
+				<div class="col-sm-4 " id="playerNameInput">
+					<label>Player Name:</label>
+					<input type="text" class="form-control" id="playerName" name="playerName">
+				</div>
+			</div>
+			<input type="submit" value="Submit" class="btn btn-outline-primary">
+
+			</form>
+		</div>
+	</body>
+</html> 
+<!-- test -->

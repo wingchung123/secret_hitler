@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Secret Hitler Board Game</title>
+		<!-- <link rel='stylesheet' href='/stylesheets/style.css' /> -->
+		<link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+		<script src="/bower_components/jquery/dist/jquery.min.js"></script>
+		<script src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	</head>
+
+	<body>
+		<nav class="navbar navbar-expand-sm navbar-dark" style= "background-color: #e5644a;">
+			<a class="navbar-brand" href="#">
+				<img src="/images/header.jpg" width="60" height="40" alt="">
+			</a>
+			<ul class="navbar-nav">
+				<li class="nav-item active">
+					<a class="nav-link" href="/">Home</a>
+				</li>
+			</ul>
+		</nav>
+
+		<!-- Body -->
+		<div class="container-fluid my-3">
+			<div class="row">
+				<div class="col-sm-8">
+					
+					<div class="container my-0 text-align" >
+						<img src="<%=helper.get_image_url(number_of_players,true,Number(number_of_facist_policies_enacted))%>" width="100%", height="100%">
+					</div>
+					<div class="container my-0 mt-0 text-align">
+						<img src="<%=helper.get_image_url(number_of_players,false,Number(number_of_liberal_policies_enacted))%>" width="100%", height="100%">
+					</div>
+				</div>
+				<div class="col-sm-4 mt-4">
+					<div class="container" id="playersDisplay">
+						<% for (var i=0; i < list_of_players.length; i++) { %>
+							<div class="card my-2">
+								<div class="card-body py-1"><%= list_of_players[i] %></div>
+							</div>
+						<% } %>
+					</div>
+					<div class="container" id="yesOrNo">
+
+					</div>
+				</div>
+
+			</div>
+		</div>
+
+	</body>
+</html> 

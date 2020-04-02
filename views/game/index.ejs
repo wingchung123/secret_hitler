@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Secret Hitler Board Game</title>
+		<!-- <link rel='stylesheet' href='/stylesheets/style.css' /> -->
+		<link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+		<script src="/bower_components/jquery/dist/jquery.min.js"></script>
+		<script src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+	</head>
+
+	<body>
+		<nav class="navbar navbar-expand-sm navbar-dark" style= "background-color: #e5644a;">
+			<a class="navbar-brand" href="#">
+				<img src="/images/header.jpg" width="60" height="40" alt="">
+			</a>
+			<ul class="navbar-nav">
+				<li class="nav-item active">
+					<a class="nav-link" href="/">Home</a>
+				</li>
+			</ul>
+		</nav>
+		<div class="container-fluid text-center" style="background-color: #ff6650;">
+			<img src="/images/logo1.png" width="500vw" height="300vh" alt="">
+		</div>
+
+		<div class="container text-center">
+			<% if (typeof status_code !== 'undefined' && status_code != 200) { %>
+				<div class="alert alert-danger mb-0 mt-3">
+					<strong>Error:</strong> Invalid Game Code. Please try again.
+				</div>
+			<% } %>
+			<div class= "my-3" id="joinGame">
+				<form action="/game/join_game" method="post">
+					<div class="row my-3">
+						<div class="col-sm-4"></div>
+						<div class="col-sm-4 " id="numPlayersInput">
+							<label for="gameCode">Game Code:</label>
+							<input type="text" class="form-control" id="gameCode" name="gameCode">
+						</div>
+					</div>
+					<input type="submit" value="Join Game!" class="btn btn-outline-primary">
+				</form>
+			</div>
+		</div>
+	</body>
+</html> 
+<!-- test -->

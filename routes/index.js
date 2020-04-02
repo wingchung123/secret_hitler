@@ -1,8 +1,21 @@
 var express = require('express');
 var router = express.Router();
+var bodyParser = require('body-parser')
+
+var urlencodedParser = bodyParser.urlencoded({ extended: false })
+
 
 let index_c = require('../controllers/index_controller')
 /* GET home page. */
-router.get('/', index_c.index);
+router.get('/', index_c.index_page);
+router.post('/createGame', urlencodedParser, index_c.create_game)
+
+
+router.get('/createPlayer', index_c.create_player_page);
+router.post('/createPlayer', urlencodedParser, index_c.create_player)
+
+
+
+router.get('/displayCookie', index_c.display_cookie)
 
 module.exports = router;
