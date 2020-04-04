@@ -9,6 +9,8 @@ exports.index_page = function(req, res, next) {
 	let data = res.locals.data
 
 	if (res.locals.gameDetailsStatusCode != 200 || res.locals.playerDetailsStatusCode != 200){
+		console.log('Game details return status: '+ res.locals.gameDetailsStatusCode)
+		console.log('Player details return status: '+ res.locals.playerDetailsStatusCode)
 		res.redirect(error) //also redirects if ejs fails to render i.e. variable names don't match with input args
 	} else {
 		res.render('player/index', { 

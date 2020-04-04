@@ -1,6 +1,7 @@
 var request = require('request')
 var cookieParser = require('cookie-parser')
-var helper= require('./helper')
+var helper = require('./helper')
+var net = require('net')
 
 
 
@@ -34,6 +35,23 @@ exports.joingame_page = function(req, res, next) {
 exports.game_board_page = function(req, res,next){
 	let data = res.locals.data
 	console.log(data)
+
+	// console.log('---------------------------start socket connection---------------------------')
+	// const client = net.createConnection({port: 4000}, function() {
+	// 	console.log('Client: I have connected')
+	// 	client.write('Client: hello this is client')
+	// });
+
+	// client.on('data', function(data){
+	// 	console.log(data.toString());
+	// 	client.end()
+	// })
+
+	// client.on('end', function(){
+	// 	console.log('Client disconnected...')
+	// })
+
+
 	if (res.locals.gameDetailsStatusCode != 200){
 		res.redirect(error) //also redirects if ejs fails to render i.e. variable names don't match with input args
 	} else {

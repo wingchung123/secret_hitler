@@ -12,6 +12,12 @@ Sample Pictures: https://medium.com/@mackenzieschubert/secret-hitler-illustratio
 
 (policy: 188px by 268px)
 
+Web sockets: https://www.pubnub.com/blog/nodejs-websocket-programming-examples/
+
+Web sockets broadcasting: https://medium.com/factory-mind/websocket-node-js-express-step-by-step-using-typescript-725114ad5fe4
+
+Nodejs & SNS topic error (an error that wasted 2hrs of my life): https://stackoverflow.com/questions/18484775/how-do-you-access-an-amazon-sns-post-body-with-express-node-js
+
 
 ## Useful docker commands 
 [Docker Guide](https://nodejs.org/en/docs/guides/nodejs-docker-webapp/)
@@ -21,7 +27,7 @@ Sample Pictures: https://medium.com/@mackenzieschubert/secret-hitler-illustratio
 
 `docker build -t wing/secret-hitler .` build image
 
-`docker run -p 49160:8080 -d wing/secret-hitler --name test-env` run image on container; -d to run in background, -p to publish port & link to machine port
+`docker run -p 49160:3000 --name test-env -d wing/secret-hitler ` run image on container; -d to run in background, -p to publish port & link to machine port
 
 `docker ps || docker container ls`
 
@@ -59,8 +65,14 @@ Nodemon has been installed for dev. Code changes automatically applied
 | Function        | Use Case           | Sudo-code  |
 | --------------- |--------------------| -----------|
 | Force Player Login| When a user wants to rejoin a game (via cookie) but they enter the incorrect game ID so it overwrites the original cookie gameID| Add a button on player create the opens a new dialogue. First check to see if name exists for that game id, if it does, have the function return player id, log it in the cookie and proceed to player index |
+| Region agnostic| Currently, the region is all defaulted to us-east-1 in AWS infrastructure as well as app.js SNS subscription | not sure|
 
 
 
 
+## Test Cases
+
+| Test Scenario   | Test Inputs        | Expected Outputs   | Resources affected |
+| --------------- |--------------------| -------------------|--------------------|
+| 
 

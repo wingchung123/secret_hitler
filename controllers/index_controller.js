@@ -11,7 +11,10 @@ exports.create_player_page = function(req, res, next) {
 	res.render('createPlayer')
 };
 
-
+/* @inputs req.body = number of players
+ * @output
+ 
+ */
 exports.create_game = function(req, res, next){
 	const api_options = {
 		url: helper.api_url + '/game',
@@ -58,12 +61,3 @@ exports.create_player = function(req, res, next){
 	})
 
 }
-
-
-exports.display_cookie = function(req, res, next){
-	console.log(req.cookies)
-	let playerCookie = req.cookies
-	res.render('index', { title: playerCookie.playerName });
-	res.status(200).end()
-}
-

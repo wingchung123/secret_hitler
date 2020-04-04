@@ -30,6 +30,37 @@ server.on('error', onError);
 server.on('listening', onListening);
 
 /**
+ * Node Socket Server
+ *
+ */
+
+var net = require('net')
+var ns = require('../servers/ns-server')
+
+var ns_server = net.createServer(ns)
+ns_server.listen(4000)
+ns_server.on('error', onError);
+ns_server.on('listening', onListening);
+
+
+/**
+ * WebSocket Server
+ *
+ */
+const WebSocketServer = require('websocket').server;
+const ws_functions = require('../servers/ws-server')
+
+
+const ws = http.createServer();
+ws.listen(5000);
+const ws_server = new WebSocketServer({
+    httpServer: ws
+});
+ws_server.on('request', ws_functions);
+
+
+
+/**
  * Normalize a port into a number, string, or false.
  */
 
