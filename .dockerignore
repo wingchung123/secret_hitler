@@ -4,3 +4,6 @@ secret-hitler.pem
 credentials.csv
 photoshop
 .git
+aws_user_credentials.csv
+lambda/aws_credentials.py
+lambda

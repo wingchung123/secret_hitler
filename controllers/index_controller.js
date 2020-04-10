@@ -13,7 +13,7 @@ exports.create_player_page = function(req, res, next) {
 
 /* @inputs req.body = number of players
  * @output
- 
+ * 		cookies: gameID = gameID from dynamoDB
  */
 exports.create_game = function(req, res, next){
 	const api_options = {

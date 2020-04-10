@@ -18,6 +18,10 @@ Web sockets broadcasting: https://medium.com/factory-mind/websocket-node-js-expr
 
 Nodejs & SNS topic error (an error that wasted 2hrs of my life): https://stackoverflow.com/questions/18484775/how-do-you-access-an-amazon-sns-post-body-with-express-node-js
 
+Dynamodb Python Examples: https://boto3.amazonaws.com/v1/documentation/api/latest/guide/dynamodb.html
+
+Dynamodb Docs: https://boto3.amazonaws.com/v1/documentation/api/latest/reference/customizations/dynamodb.html#boto3.dynamodb.conditions.Attr
+
 
 ## Useful docker commands 
 [Docker Guide](https://nodejs.org/en/docs/guides/nodejs-docker-webapp/)
@@ -74,5 +78,15 @@ Nodemon has been installed for dev. Code changes automatically applied
 
 | Test Scenario   | Test Inputs        | Expected Outputs   | Resources affected |
 | --------------- |--------------------| -------------------|--------------------|
-| 
 
+
+
+
+
+
+## DynamoDB Test Cases
+
+
+| Test Scenario   | Table    | Unique ID       | Test Case |
+| --------------- |----------| --------------- |-----------|
+| All players are created | secret-hitler-players | gameID = 1 | lambda user_creation|
