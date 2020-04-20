@@ -5,5 +5,5 @@ credentials.csv
 aws_user_credentials.csv
 lambda/aws_credentials.py
 **/__pycache__/
-**/__pycache__/
+**/**/__pycache__/
 *.pyc

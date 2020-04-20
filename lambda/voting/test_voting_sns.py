@@ -212,6 +212,7 @@ def test_vote_passes_check_db_update():
 	assert currentGame['policiesInHand'] == ['L', 'F', 'F']
 	assert currentGame['previousPresidentID'] == '1'
 	assert currentGame['previousChancellorID'] == '2'
+	assert snsData['gameID'] == gameID
 
 
 
@@ -286,6 +287,8 @@ def test_vote_passes_chancellor_not_hitler():
 	assert snsData['policiesInHand'] == currentGame['policiesInHand']
 	assert snsData['chancellorID'] == currentGame['previousChancellorID']
 	assert snsData['vetoPower'] == currentGame['vetoPower']
+	assert snsData['gameID'] == gameID
+	assert snsData['presidentID'] == currentGame['currentPresidentID']
 
 
 
@@ -412,6 +415,7 @@ def test_vote_fails_new_president_to_elect():
 	assert snsData['previousChancellorID'] == currentGame['previousChancellorID']
 	assert snsData['electionTracker'] == currentGame['electionTracker']
 	assert snsData['listOfPlayers'] == currentGame['players']
+	assert snsData['gameID'] == gameID
 
 
 
@@ -489,6 +493,7 @@ def test_vote_fails_election_tracker_3_top_card_liberal():
 	assert snsData['previousChancellorID'] == currentGame['previousChancellorID']
 	assert snsData['electionTracker'] == currentGame['electionTracker']
 	assert snsData['listOfPlayers'] == currentGame['players']
+	assert snsData['gameID'] == gameID
 
 
 def test_vote_fails_election_tracker_3_top_card_facist():
@@ -564,6 +569,7 @@ def test_vote_fails_election_tracker_3_top_card_facist():
 	assert snsData['previousChancellorID'] == currentGame['previousChancellorID']
 	assert snsData['electionTracker'] == currentGame['electionTracker']
 	assert snsData['listOfPlayers'] == currentGame['players']
+	assert snsData['gameID'] == gameID
 
 
 def test_vote_fails_at_3_top_policy_enables_veto_power():
@@ -640,6 +646,7 @@ def test_vote_fails_at_3_top_policy_enables_veto_power():
 	assert snsData['previousChancellorID'] == currentGame['previousChancellorID']
 	assert snsData['electionTracker'] == currentGame['electionTracker']
 	assert snsData['listOfPlayers'] == currentGame['players']
+	assert snsData['gameID'] == gameID
 
 
 

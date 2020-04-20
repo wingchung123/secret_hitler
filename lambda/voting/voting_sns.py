@@ -18,8 +18,12 @@ dynamodb = boto3.resource('dynamodb',  aws_access_key_id=awsAccessKey, aws_secre
 def does_vote_pass(listOfVotes):
 	yesCount = 0
 	for vote in listOfVotes:
-		if vote['vote']:
-			yesCount = yesCount + 1
+		try:
+			if str(vote['vote']).lower() == 'true':
+				yesCount = yesCount + 1
+		except:
+			raise Exception('Error: Not enough votes [300]')
+
 
 	return yesCount > .5 * len(listOfVotes)
 
@@ -130,6 +134,8 @@ def lambda_function(event, context=None):
 			returnValue['policiesInHand'] = currentGame['policiesInHand']
 			returnValue['chancellorID'] = currentGame['chancellorID']
 			returnValue['vetoPower'] = currentGame['vetoPower']
+			returnValue['gameID'] = currentGameID
+			returnValue['presidentID'] = str(currentGame['currentPresidentID'])
 
 			
 	else:
@@ -184,8 +190,14 @@ def lambda_function(event, context=None):
 		returnValue['presidentID'] = str(currentGame['currentPresidentID'])
 		returnValue['previousPresidentID'] = currentGame['previousPresidentID']
 		returnValue['previousChancellorID'] = currentGame['previousChancellorID']
-		returnValue['electionTracker'] = currentGame['electionTracker']
+		returnValue['electionTracker'] = int(currentGame['electionTracker'])
 		returnValue['listOfPlayers'] = currentGame['players']
+		returnValue['gameID'] = currentGameID
 
 	remove_previous_votes(playerTableName, currentGameID)
 	return returnValue
+
+
+
+
+

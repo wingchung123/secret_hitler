@@ -1,6 +1,525 @@
+<script src="/javascripts/ejs.min.js"></script>
+<!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script> -->
 <script type="text/javascript">
 
-	function WebSocketTest() {
+  const MAX_COOKIE_AGE = 4 * 60 * 60 //in seconds
+
+  function get_image_url(numOfPlayers, isFacistBoard, numOfPoliciesEnacted) {
+
+      image_url_value = ""
+      if (isFacistBoard){
+        if (numOfPlayers < 7 ) {
+          switch (numOfPoliciesEnacted) {
+            case 0:
+              image_url_value = '/images/boards/small/facist_board_5_6.png';
+              break;
+            case 1:
+              image_url_value = '/images/boards/small/facist_board_5_6_1.png';
+              break;
+            case 2:
+              image_url_value = '/images/boards/small/facist_board_5_6_2.png';
+              break;
+            case 3:
+              image_url_value = '/images/boards/small/facist_board_5_6_3.png';
+              break;
+            case 4:
+              image_url_value = '/images/boards/small/facist_board_5_6_4.png';
+              break;
+            case 5:
+              image_url_value = '/images/boards/small/facist_board_5_6_5.png';
+              break;
+            case 6:
+              image_url_value = '/images/boards/small/facist_board_5_6_6.png';
+              break;
+            default:
+              image_url_value = 'error in switch statement'
+              break;
+          }
+        } else if (numOfPlayers < 9) {
+          switch (numOfPoliciesEnacted) {
+            case 0:
+              image_url_value = '/images/boards/medium/facist_board_7_8.png'
+              break;
+            case 1:
+              image_url_value = '/images/boards/medium/facist_board_7_8_1.png'
+              break;
+            case 2:
+              image_url_value = '/images/boards/medium/facist_board_7_8_2.png'
+              break;
+            case 3:
+              image_url_value = '/images/boards/medium/facist_board_7_8_3.png'
+              break;
+            case 4:
+              image_url_value = '/images/boards/medium/facist_board_7_8_4.png'
+              break;
+            case 5:
+              image_url_value = '/images/boards/medium/facist_board_7_8_5.png'
+              break;
+            case 6:
+              image_url_value = '/images/boards/medium/facist_board_7_8_6.png'
+              break;
+            default:
+              image_url_value = 'error in switch statement'
+              break;
+          }
+
+        } else if (numOfPlayers < 11) {
+          switch (numOfPoliciesEnacted) {
+            case 0:
+              image_url_value = '/images/boards/large/facist_board_9_10.png'
+              break;
+            case 1:
+              image_url_value = '/images/boards/large/facist_board_9_10_1.png'
+              break;
+            case 2:
+              image_url_value = '/images/boards/large/facist_board_9_10_2.png'
+              break;
+            case 3:
+              image_url_value = '/images/boards/large/facist_board_9_10_3.png'
+              break;
+            case 4:
+              image_url_value = '/images/boards/large/facist_board_9_10_4.png'
+              break;
+            case 5:
+              image_url_value = '/images/boards/large/facist_board_9_10_5.png'
+              break;
+            case 6:
+              image_url_value = '/images/boards/large/facist_board_9_10_6.png'
+              break;
+            default:
+              image_url_value = 'error in switch statement'
+              break;
+          }
+
+        } else {
+          //error
+          console.log("Invalid number of players")
+          image_url_value = 'Invalid number of players'
+        }
+      } else {
+        switch (numOfPoliciesEnacted) {
+          case 0:
+            image_url_value = '/images/boards/liberal/liberal_board.png'
+            break;
+          case 1:
+            image_url_value = '/images/boards/liberal/liberal_board_1.png'
+            break;
+          case 2:
+            image_url_value = '/images/boards/liberal/liberal_board_2.png'
+            break;
+          case 3:
+            image_url_value = '/images/boards/liberal/liberal_board_3.png'
+            break;
+          case 4:
+            image_url_value = '/images/boards/liberal/liberal_board_4.png'
+            break;
+          case 5:
+            image_url_value = '/images/boards/liberal/liberal_board_5.png'
+            break;
+          default:
+            image_url_value = 'error in switch statement'
+            break;
+        }
+      }
+      return image_url_value
+    }
+
+  function setTimeForCookies (minutes) {
+    var now = new Date();
+    var time = now.getTime();
+   
+    time += minutes * 60 * 1000;
+    now.setTime(time);
+    return now;
+  }
+
+  function getCookieValue(name) {
+    let result = document.cookie.match("(^|[^;]+)\\s*" + name + "\\s*=\\s*([^;]+)")
+    return result ? result.pop() : ""
+  }
+
+  function setCookieValue(key,value,path='/'){
+    cookieString = key + "=" + value + "; max-age=" + MAX_COOKIE_AGE + '; path=' + path
+    document.cookie = cookieString.trim()
+  }
+
+  function deleteCookieValue(key,path='/'){
+    cookieString = key + "=" + "" + "; expires=Thu, 18 Dec 2013 12:00:00 UTC" + '; path=' + path
+    document.cookie = cookieString.trim()
+  }
+
+  function amIPresident(){
+    let thisPlayerID = getCookieValue('playerID')
+    let presidentID = getCookieValue('presidentID')
+    return thisPlayerID == presidentID
+  }
+
+  // excludes this player
+  function generatePlayersList(){
+    let numberOfPlayers = getCookieValue('numberOfPlayers')
+    let playerID = getCookieValue('playerID')
+    let returnValue = []
+    for (var i = 1; i <= numberOfPlayers; i++){
+      if (playerID != i){
+        let playerName = getCookieValue(i)
+        if (playerName != ""){
+          let player = {
+            "playerName" : getCookieValue(i),
+            "playerID" : i
+          }
+          returnValue.push(player)
+        }
+      }
+    }
+
+    return returnValue
+  }
+
+  function generatePlayersOptions(listOfPlayers){
+    let returnHTML = "<option value=\"\"></option>"
+    listOfPlayers.forEach(function(item, index) {
+      returnHTML += "<option value=" + item.playerID + ">" + item.playerName + "</option>"
+    })
+    return returnHTML
+  }
+
+  //to enable/disable backdrop & close button of modal
+  function disableModalBackdrop(boolean) {
+    if (boolean){
+      // disable background click dismissal
+      $('#executiveActionModal').modal({backdrop: 'static', keyboard: false, show: false})
+      $('#executiveActionResultModal').modal({backdrop: 'static', keyboard: false, show: false})
+
+
+      // disable close button dismissal
+      $('#executiveActionResultModalClose').prop("disabled",true)
+      $('#executiveActionModalClose').prop("disabled",true)
+
+      // $('#executiveActionModal').modal('hide')
+      // $('#executiveActionResultModal').modal('hide')
+
+
+    } else {
+      try {
+        $('#executiveActionModal').data('bs.modal')._config.backdrop = true;
+      } catch (e) {
+        console.log("tried to enable backdrop")
+      }
+      try {
+        $('#executiveActionResultModal').data('bs.modal')._config.backdrop = true;
+      } catch (e) {
+        console.log("tried to enable backdrop")
+      }
+
+      $('#executiveActionResultModalClose').prop("disabled",false)
+      $('#executiveActionModalClose').prop("disabled",false)
+
+    }
+  }
+
+  //input {executive_action: string, game_id: string}
+  function executiveAction(executiveActionData) {
+    if (executiveActionData.executive_action == 'special_election') {
+
+    } else {
+      fetch('executive_action',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(executiveActionData)
+
+      }).then(res => {return res.text()} )
+        .then(jsonRes => {
+          // console.log(jsonRes)
+          // console.log(JSON.parse(jsonRes).executiveActionResult)
+          let executiveActionResult = JSON.parse(jsonRes).executiveActionResult
+          // console.log("this is inside the response")
+          console.log(executiveActionResult)
+
+          if (executiveActionData.executive_action == "policy_peek"){
+
+            // change the img src to reflect next 3 policies
+            for (let i = 0; i < executiveActionResult.length; i++) {
+              let nextPolicy = executiveActionResult[i]
+              let policyPeekSelector = '#policyPeek' + (i + 1)
+              let policyPeekImageSRC = ""
+              if (nextPolicy == 'L') {
+                policyPeekImageSRC = '/images/liberal_policy_rounded.png'
+              } else if (nextPolicy == 'F') {
+                policyPeekImageSRC = '/images/facist_policy_rounded.png'
+              }
+              $(policyPeekSelector).attr('src',policyPeekImageSRC)
+            }
+            $('#executiveActionResultModal').modal('show')
+            $('#executiveActionModalBodyPolicyPeek').removeClass('d-none')
+            $('#executiveActionModalBodyInvestigateLoyalty').addClass('d-none')
+            $('#executiveActionModalBodyExecution').addClass('d-none')
+            $('#executiveActionResultSubmit').removeClass('d-none')
+
+
+          } else if (executiveActionData.executive_action == "investigate_loyalty"){
+            let membershipSRC = ""
+            if(executiveActionResult == 'Liberal') {
+              membershipSRC = "/images/party_membership_liberal.png"
+            } else if (executiveActionResult == 'Facist'){
+              membershipSRC = "/images/party_membership_facist.png"
+            }
+
+            $('#investigateMembershipResult').attr('src', membershipSRC)
+            $('#investigatedPlayer').html(function(index,currentcontent) {
+                return "<i>" + $( "#selectPlayer option:selected" ).text() + "</i>"
+            })
+
+            $("#selectPlayer option:selected").prop("selected", false)
+            $('#investigateOrExecutionSubmit').addClass('d-none')
+            
+            $('#executiveActionResultModal').modal('show')
+            $('#executiveActionModalBodyInvestigateLoyalty').removeClass('d-none')
+            $('#executiveActionModalBodyPolicyPeek').addClass('d-none')
+            $('#executiveActionModalBodyExecution').addClass('d-none')
+            $('#executiveActionResultSubmit').removeClass('d-none')
+
+          } else if (executiveActionData.executive_action == "execution"){
+            // if it's execution, it would either call next turn or end game
+            // thus minimize result
+
+            $('#executedPlayer').html(function(index,currentcontent) {
+                return  "<i>" + $( "#selectPlayer option:selected" ).text() + "</i> has been killed.</br>" + "<i>" + $( "#selectPlayer option:selected" ).text() + "</i> is " + executiveActionResult
+            })
+            $('#executiveActionResultModal').modal('show')
+            $('#executiveActionModalBodyExecution').removeClass('d-none')
+            $('#executiveActionModalBodyInvestigateLoyalty').addClass('d-none')
+            $('#executiveActionModalBodyPolicyPeek').addClass('d-none')
+            $('#executiveActionResultSubmit').removeClass('d-none')
+
+
+            $("#selectPlayer option:selected").prop("selected", false)
+            $('#investigateOrExecutionSubmit').addClass('d-none')
+          }
+        })
+    }
+  }
+
+
+  function loadPolicies(list_of_policies){
+    //show policies
+    $('#policiesModal').modal('show')
+
+    fetch('new_policies_event',
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(list_of_policies)
+
+    }).then(res => {return res.text()} )
+      .then(jsonRes => {
+        // append new player card html to existing div
+       $("#policies").html(function(index,currentcontent){
+          return jsonRes
+       })
+       policyRadioListeners();
+      })
+
+    fetch('new_policies_radio_event',
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(list_of_policies)
+
+    }).then(res => {return res.text()} )
+      .then(jsonRes => {
+        // append new player card html to existing div
+       $("#policiesRadio").html(function(index,currentcontent){
+          return jsonRes
+       })
+      })
+    $('#policyAccordion').removeClass('d-none')
+
+  }
+
+
+  function policyRadioListeners(){
+    $('#policy_1').click(function() {
+      $('#radio_1').prop('checked',true)
+    })
+    $('#policy_2').click(function() {
+      $('#radio_2').prop('checked',true)
+    })
+    $('#policy_3').click(function() {
+      $('#radio_3').prop('checked',true)
+    })
+  }
+
+  function reloadGameUponRefresh(){
+    let presidentID = getCookieValue('presidentID')
+    let chancellorID = getCookieValue('chancellorID')
+    let previousPresidentID = getCookieValue('previousPresidentID')
+    let previousChancellorID = getCookieValue('previousChancellorID')
+    let electionTracker = getCookieValue('electionTracker')
+    // let numberOfLiberalPoliciesEnacted = getCookieValue('numberOfLiberalPoliciesEnacted')
+    // let numberOfFacistPoliciesEnacted = getCookieValue('numberOfFacistPoliciesEnacted')
+    let thisPlayerID = getCookieValue('playerID')
+    let policiesInHand = getCookieValue('policiesInHand')
+    let locked_in = getCookieValue('locked_in')
+    let executiveAction = getCookieValue('executiveAction') // chancellor ID is locked in, enable voting
+
+    if (executiveAction != 'Null'){
+
+      $('#executiveActionModalBodyTitle').html(function(index,currentcontent){
+        let leadingMessage = currentcontent.split(':')[0]
+        return leadingMessage + ': <strong>' + executiveAction.replace('_', ' ') + "</strong>"
+      })
+
+      if (amIPresident()){
+        disableModalBackdrop(true)
+
+        if (executiveAction == "policy_peek"){
+          $('#executiveActionModalSNSBody').addClass('d-none')
+          $('#investigateOrExecutionSubmit').addClass('d-none')
+          $('#executiveActionSubmit').removeClass('d-none')
+          $('#investigateOrExecutionSubmit').prop("disabled",true)
+        } else {
+          let listOfPlayers = generatePlayersList()
+          $('#selectPlayer').html(function(index,currentcontent){
+            return generatePlayersOptions(listOfPlayers)
+          });
+
+          $('#executiveActionSubmit').addClass('d-none')
+          $('#executiveActionModalSNSBody').removeClass('d-none')
+          $('#investigateOrExecutionSubmit').addClass('d-none')
+          $('#specialElectionSubmit').addClass('d-none')
+
+          if (executiveAction == "special_election"){
+            $('#specialElectionSubmit').prop("disabled",false)
+          } else {
+            // investigate or execute
+            $('#investigateOrExecutionSubmit').prop("disabled",false)
+            if (executiveAction == "investigate_loyalty"){
+              $('#investigateOrExecutionSubmit').html('Investigate')
+            } else if (executiveAction == "execution") {
+              $('#investigateOrExecutionSubmit').html('Execute')
+            }
+          }
+        }
+      } else {
+        disableModalBackdrop(false)
+        $('#executiveActionSubmit').removeClass('d-none')
+        $('#executiveActionModalSNSBody').addClass('d-none')
+        $('#investigateOrExecutionSubmit').prop("disabled",true)
+        $('#investigateOrExecutionSubmit').addClass('d-none')
+      }
+
+      $('#executiveActionModal').modal('show')
+
+
+    } else if (policiesInHand != 'Null' ) {
+        console.log("vote has passed... waiting on policy discard/enactment")
+        $('#voteYes').prop("disabled",true)
+        $('#voteNo').prop("disabled",true)
+        $('#vetoPower').addClass('d-none')
+        $('#vetoPower').prop('disabled', true)
+
+        $('#policyAccordion').addClass('d-none')
+        if (policiesInHand == 3 && amIPresident() ){
+          $('#policiesModal').modal('show')
+          $('#policyAccordion').removeClass('d-none')
+
+          policyRadioListeners();
+        } else if (policiesInHand == 2 && thisPlayerID == chancellorID){
+          console.log(getCookieValue('vetoPower') == 'true')
+          // if not the president, delete the html policies
+          $('#policiesModal').modal('show')
+          $('#policyAccordion').removeClass('d-none')
+
+          if (getCookieValue('vetoPower') == 'true') {
+            $('#vetoPower').removeClass('d-none')
+            $('#vetoPower').prop('disabled', false)
+          }
+          
+
+          policyRadioListeners();
+        } else {
+          $("#policies").html('<div></div>')
+          $("#policiesRadio").html('<div></div>')
+        }
+
+    } else if ( locked_in == 'true') {
+      console.log("chancellor has been locked in... voting time")
+      // chancellor is locked in, enable voting buttons
+      // make sure chancellorID is not null
+        $('#voteYes').prop("disabled",false)
+        $('#voteNo').prop("disabled",false)
+
+    } else {
+      // default state; similar to after next_turn SNS
+      // time to select a chancellor and lock it in
+      console.log("chancellor section time")
+      if (amIPresident() ){
+
+        $('#presidentModal').modal('show')
+        $('#chancellorSelectionAccordion').removeClass('d-none')
+      }
+
+
+
+
+    }
+
+
+    //identify current president and display badge
+    let selectedPresidentSelector = '#presidentElect_' + presidentID
+    $(selectedPresidentSelector).removeClass('d-none')
+    let selectedChancellorSelector = '#chancellorElect_' + chancellorID
+    $(selectedChancellorSelector).removeClass('d-none')
+
+    // identify who the past president & chancellor are
+    let previousPresidentSelector = '#previousPresident_' + previousPresidentID
+    let previousChancellorSelector = '#previousChancellor_' + previousChancellorID
+
+    $(previousPresidentSelector).removeClass('d-none')
+    $(previousChancellorSelector).removeClass('d-none')
+
+  }
+
+  /* Structure of messages
+   *  message.origin = sns || peer
+   *  message.subject = switch case
+   *  message.message = json data **** MUST INCLUDE GAME ID ****
+   *
+   **/
+  function sendWSMessage(message){
+
+    if ("WebSocket" in window) {
+           console.log("WebSocket is supported by your Browser!");
+           
+           // Let us open a web socket
+           let singleWS = new WebSocket("ws://localhost:5000")
+      
+           singleWS.onopen = function() {
+              // Web Socket is connected, send data using send()
+              singleWS.send(JSON.stringify(message))
+              singleWS.close()
+           };
+      
+           singleWS.onclose = function() { 
+              // websocket is closed.
+              console.log("singleWS connection is closed..."); 
+           };
+        } else {
+           // The browser doesn't support WebSocket
+           console.log("WebSocket NOT supported by your Browser!");
+        }
+
+
+  }
+
+	function WebSocketEstablish() {
             
         if ("WebSocket" in window) {
            console.log("WebSocket is supported by your Browser!");
@@ -9,20 +528,39 @@
            var ws = new WebSocket("ws://localhost:5000")
 			
            ws.onopen = function() {
-              
               // Web Socket is connected, send data using send()
-              ws.send("Message to send");
-              console.log("Message is sent...");
+              console.log("Connected...");
            };
 			
-           ws.onmessage = function (evt) { 
-              var received_msg = evt.data;
+           ws.onmessage = function (event) { 
+              var received_msg = JSON.parse(event.data);
               console.log("Message is received...");
-              console.log(received_msg)
+              console.log("subject: " + received_msg.subject)
+              console.log("message/data: " + JSON.stringify(received_msg.message))
+
+              let thisGameID = getCookieValue('gameID')
+              if ( thisGameID == received_msg.message.gameID ) {
+                console.log("gameID matches... parsing message")
+                if (received_msg.origin == 'sns' ){
+                  //sns message from AWS
+                  $('#fakeLoad').modal('show')
+                  snsParseEvent(received_msg)
+                } else {
+                  // origin == 'peer'
+                  //broadcast from other players
+                  console.log(received_msg)
+                  peerParseEvent(received_msg)
+                }
+              } else {
+                //message was for another game
+              }
+
+
+              
+
            };
 			
            ws.onclose = function() { 
-              
               // websocket is closed.
               console.log("Connection is closed..."); 
            };
@@ -33,6 +571,740 @@
         }
     };
 
-    WebSocketTest();
+  // {subject: switch_value, message:json_data}
+  function peerParseEvent(peerEvent){
+      let subject = peerEvent.subject
+      let data = peerEvent.message
+
+
+      switch (subject){
+
+        case 'select_chancellor':
+          $('#fakeLoad').modal('show')
+          let presidentID = data.presidentID
+          let chancellorID = data.chancellorID
+
+          // set cookie value to submit when voting
+          setCookieValue('presidentID',presidentID)
+          setCookieValue('chancellorID',chancellorID)
+
+          // display who has been selected for election
+          // President display handled in next_turn SNS
+          let selectedChancellorSelector = '#chancellorElect_' + chancellorID
+          // hide all then show
+          $('.chancellorElect').addClass('d-none')
+          $(selectedChancellorSelector).removeClass('d-none')
+
+
+
+
+          break;
+
+        case 'locked_in':
+          // enable voting button
+          console.log('within locked_in function')
+          $('#voteYes').prop("disabled",false)
+          $('#voteNo').prop("disabled",false)
+
+          setCookieValue('locked_in' , 'true')
+
+          break;
+
+        case 'voted':
+          let playerVotedID = data.playerID
+          let playerVotedSelector = '#player'+playerVotedID+'_text'
+          $(playerVotedSelector).css('border-left', '15px solid #5aba97')
+          break;
+
+        case 'chancellor_policies':
+          let chancellorID_policies = data.chancellorID
+          let thisPlayerID = getCookieValue('playerID')
+          let policies = data.policies.trim().split(' ')
+          let vetoPower = getCookieValue('vetoPower')
+
+          // console.log(policies)
+          // Clear out policies HTML & hide accordion
+          $("#policies").html('<div></div>')
+          $("#policiesRadio").html('<div></div>')
+          $('#policyAccordion').addClass('d-none')
+          $('#vetoPower').addClass('d-none')
+
+          if (policies.length == 2){
+            setCookieValue('policiesInHand', 2)
+            if (thisPlayerID == chancellorID_policies){
+              if (vetoPower == 'true'){
+                $('#vetoPower').removeClass('d-none')
+                $('#vetoPower').prop("disabled", false)
+              }
+              loadPolicies(policies)
+            }
+          } else if (policies.length == 1){
+            // only 1 policy means it has been submitted to the DB
+            // set policiesInHand back to Null
+            setCookieValue('policiesInHand', 'Null')
+          }
+
+          break;
+
+        case 'chancellorEnactVetoPower':
+          if (amIPresident()){
+            $('#vetoModalPresident').modal({backdrop: 'static', keyboard: false})
+          }
+
+          break;
+        case 'presidentDenyVetoPower':
+          let chancellorID_veto = getCookieValue('chancellorID')
+          let thisPlayerID_veto = getCookieValue('playerID')
+
+          if (chancellorID_veto == thisPlayerID_veto){
+            $('#vetoModalChancellor').modal('show')
+          }
+
+          break;
+        case 'presidentApproveVetoPower':
+          // Clear out policies HTML & hide accordion
+          $("#policies").html('<div></div>')
+          $("#policiesRadio").html('<div></div>')
+          $('#policyAccordion').addClass('d-none')
+          $('#vetoPower').addClass('d-none')
+
+          break;
+
+
+
+
+
+      }
+
+      //after switch
+    }
+
+
+    function snsParseEvent(snsEvent){
+      var subject = snsEvent.subject
+      var data = snsEvent.message
+
+      switch (subject) {
+        case 'new_player':
+          playerID = data.playerID
+          playerName = data.playerName
+
+          thisPlayerID = getCookieValue('playerID')
+          if (playerID != thisPlayerID){ // only append if it's not the current playerID to prevent double appending
+            fetch('new_player_event',
+            {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(data)
+
+            }).then(res => {return res.text()} )
+              .then(jsonRes => {
+                // append new player card html to existing div
+               $("#snsAddPlayerHere").html(function(index,currentcontent){
+                  return currentcontent + jsonRes
+               })
+              })
+
+            // also add this player as a cookie
+            setCookieValue(playerID,playerName)
+          }
+          break;
+
+        //case
+        case 'next_turn':
+        /**
+          {
+            "presidentID",
+            "previousPresidentID",
+            "previousChancellorID",
+            "electionTracker",
+            "listOfPlayers", ([{playerName, playerID}, ...]),
+            "executedPlayers" ([{playerName, playerID}, ...])
+          }
+          *
+          **/
+          //set all the cookie values to maintain game state
+          let presidentID = data.presidentID
+          let previousPresidentID = data.previousPresidentID
+          let electionTracker = data.electionTracker
+          let previousChancellorID = data.previousChancellorID
+
+
+          setCookieValue('presidentID',presidentID)
+          setCookieValue('previousPresidentID',previousPresidentID)
+          setCookieValue('electionTracker',electionTracker)
+          setCookieValue('previousChancellorID',previousChancellorID)
+
+          deleteCookieValue('chancellorID') // delete the old chancellorID
+
+          $('#chancellorSelectionAccordion').addClass('d-none')
+          thisPlayerID = getCookieValue('playerID')
+          if (amIPresident()){
+            $('#presidentModal').modal('show')
+            $('#chancellorSelectionAccordion').removeClass('d-none')
+          }
+
+          //identify current president and display badge
+          $('.presidentElect').addClass('d-none') // hide all
+          let selectedPresidentSelector = '#presidentElect_' + presidentID
+          $(selectedPresidentSelector).removeClass('d-none')
+
+          // identify who the past president & chancellor are
+          // first hide all then show
+          $('.previousPresident').addClass('d-none')
+          $('.previousChancellor').addClass('d-none')
+
+          let previousPresidentSelector = '#previousPresident_' + previousPresidentID
+          let previousChancellorSelector = '#previousChancellor_' + previousChancellorID
+
+          $(previousPresidentSelector).removeClass('d-none')
+          $(previousChancellorSelector).removeClass('d-none')
+
+          // Strike through executed players
+          // Players will be completely ommited if page is refreshed
+          data.executedPlayers.forEach(function(item,index){
+            executedPlayerSelector = "#player" + item.playerID + "_text"
+            $(executedPlayerSelector).html(function(index,currentcontent){
+              return "<s>" + currentcontent + "</s>"
+            })
+          });
+
+          // Add existing players as options in Chancellor Selection
+          let selectorHTML = ""
+          let numberOfPlayers = getCookieValue('numberOfPlayers')
+          data.listOfPlayers.forEach(function(item,index){
+            if (item.playerID != presidentID && item.playerID != previousChancellorID && (item.playerID != previousPresidentID || numberOfPlayers == 5) ){
+              selectorHTML += "<option value=\"" + item.playerID + "\">" + item.playerName + "</option>"
+            }
+            
+          })
+          $('#selectChancellor').html(selectorHTML)
+
+          break;
+
+        case 'voting_sns':
+          console.log("in voting sns switch")
+        /**
+         *  {
+         *    "policiesInHand",
+         *    "chancellorID",
+         *    "vetoPower",
+         *    "gameID"
+         *  }
+         *  OR
+          {
+            "presidentID",
+            "previousPresidentID",
+            "previousChancellorID",
+            "electionTracker",
+            "listOfPlayers", ([{playerName, playerID}, ...]),
+            "executedPlayers" ([{playerName, playerID}, ...]),
+            "gameID"
+          }
+          *
+          **/
+          // if it's similar to next turn message, just call snsParse with new data
+          if ( ("electionTracker" in data) ) {
+            let snsEvent = {}
+            snsEvent.subject = 'next_turn'
+            snsEvent.message = data
+            snsParseEvent(snsEvent)
+          } else {
+
+            let policiesInHand = data.policiesInHand
+            let chancellorID = data.chancellorID
+            let vetoPower = data.vetoPower
+            let gameID = data.gameID
+            let presidentID = data.presidentID
+
+            setCookieValue('presidentID',presidentID)
+            setCookieValue('policiesInHand', policiesInHand.length)
+            setCookieValue('vetoPower',vetoPower)
+            setCookieValue('chancellorID',chancellorID)
+
+            // Hide Chancellor Selection & disable voting
+            $('#chancellorSelectionAccordion').addClass('d-none')
+            $('#voteYes').prop("disabled",true)
+            $('#voteNo').prop("disabled",true)
+
+
+            // Clear out policies HTML & hide accordion
+            $("#policies").html('<div></div>')
+            $("#policiesRadio").html('<div></div>')
+            $('#policyAccordion').addClass('d-none')
+            $('#vetoPower').addClass('d-none')
+            $('#vetoPower').prop('disabled', true)
+
+            thisPlayerID = getCookieValue('playerID')
+            setCookieValue('policiesInHand', 3)
+            if (amIPresident() ){
+              loadPolicies(policiesInHand)
+            } else {
+              //do nothing
+            }
+
+          }
+          break;
+
+        case 'policy_enactment':
+          let numberOfPlayers_policy_enactment = getCookieValue('numberOfPlayers')
+          let numberOfFacistPoliciesEnacted = data.numberOfFacistPoliciesEnacted
+          let numberOfLiberalPoliciesEnacted = data.numberOfLiberalPoliciesEnacted
+          facist_board_url = get_image_url(numberOfPlayers_policy_enactment, true, numberOfFacistPoliciesEnacted)
+          liberal_board_url = get_image_url(numberOfPlayers_policy_enactment, false, numberOfLiberalPoliciesEnacted)
+          let executiveActionData = {}
+
+          $('#facist_board').attr("src", facist_board_url);
+          $('#liberal_board').attr("src", liberal_board_url);
+
+          setCookieValue('executiveAction', data.executiveAction)
+
+          if (data.executiveAction != "" ) {
+            // change modal body to match executive action
+            $('#executiveActionModalBodyTitle').html(function(index,currentcontent){
+              let leadingMessage = currentcontent.split(':')[0]
+              return leadingMessage + ': <strong>' + data.executiveAction.replace('_', ' ') + "</strong>"
+            })
+
+            if (amIPresident()){
+              disableModalBackdrop(true)
+
+              if (data.executiveAction == "policy_peek"){
+                $('#executiveActionModalSNSBody').addClass('d-none')
+                $('#investigateOrExecutionSubmit').addClass('d-none')
+                $('#executiveActionSubmit').removeClass('d-none')
+                $('#investigateOrExecutionSubmit').prop("disabled",true)
+              } else {
+                let listOfPlayers = generatePlayersList()
+                $('#selectPlayer').html(function(index,currentcontent){
+                  return generatePlayersOptions(listOfPlayers)
+                });
+
+                $('#executiveActionSubmit').addClass('d-none')
+                $('#executiveActionModalSNSBody').removeClass('d-none')
+                $('#investigateOrExecutionSubmit').addClass('d-none')
+                $('#specialElectionSubmit').addClass('d-none')
+
+                if (data.executiveAction == "special_election"){
+                  $('#specialElectionSubmit').prop("disabled",false)
+                } else {
+                  // investigate or execute
+                  $('#investigateOrExecutionSubmit').prop("disabled",false)
+                  if (data.executiveAction == "investigate_loyalty"){
+                    $('#investigateOrExecutionSubmit').html('Investigate')
+                  } else if (data.executiveAction == "execution") {
+                    $('#investigateOrExecutionSubmit').html('Execute')
+                  }
+                }
+              }
+            } else {
+              disableModalBackdrop(false)
+              $('#executiveActionSubmit').removeClass('d-none')
+              $('#executiveActionModalSNSBody').addClass('d-none')
+              $('#investigateOrExecutionSubmit').prop("disabled",true)
+              $('#investigateOrExecutionSubmit').addClass('d-none')
+            }
+
+            $('#executiveActionModal').modal('show')
+          }
+
+
+          break;
+
+
+
+        
+
+      }
+      
+      
+
+
+    }
+
+
+    $(document).ready( function() {
+      $('.previousPresident').tooltip()
+      $('.previousChancellor').tooltip()
+      $('.presidentElect').tooltip()
+      $('.chancellorElect').tooltip()
+
+      $('#fakeLoad').on('show.bs.modal', function(e){
+        setTimeout(function() {
+          $('#fakeLoad').modal('hide')
+        }, 700)
+      })
+
+      // Chancellor Selection
+
+
+      // Voting Listeners
+      $('#voteYes').click(function(){
+        peerMessage = {
+          "origin" : 'peer',
+          "subject" : 'voted',
+          "message" : {
+            "gameID" : getCookieValue('gameID'),
+            "playerID": getCookieValue('playerID') 
+          }
+        }
+
+        sendWSMessage(peerMessage)
+        let data = { 
+          "game_id" : getCookieValue('gameID'),
+          "player_id" : getCookieValue('playerID'),
+          "vote" : true,
+          "president_id" : getCookieValue('presidentID'),
+          "chancellor_id" : getCookieValue('chancellorID')
+        }
+        $('#fakeLoad').modal('show')
+        fetch('voting',
+            {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(data)
+
+            }).then(res => {return res.text()} )
+              .then(jsonRes => {
+               console.log(jsonRes)
+              })
+      });
+      $('#voteNo').click(function(){
+        peerMessage = {
+          "origin" : 'peer',
+          "subject" : 'voted',
+          "message" : {
+            "gameID" : getCookieValue('gameID'),
+            "playerID": getCookieValue('playerID') 
+          }
+        }
+        sendWSMessage(peerMessage)
+        let data = { 
+          "game_id" : getCookieValue('gameID'),
+          "player_id" : getCookieValue('playerID'),
+          "vote" : false,
+          "president_id" : getCookieValue('presidentID'),
+          "chancellor_id" : getCookieValue('chancellorID')
+        }
+        $('#fakeLoad').modal('show')
+        fetch('voting',
+            {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(data)
+
+            }).then(res => {return res.text()} )
+              .then(jsonRes => {
+               console.log(jsonRes)
+              })
+      })
+
+
+
+      // Chancellor Select Listeners
+      $('#selectChancellor').change(function (){
+
+        if ($('#selectChancellor').val() == ""){
+          $('#selectChancellorLock').addClass('d-none')
+        } else {
+          $('#selectChancellorLock').removeClass("d-none")
+        }
+
+        let chancellorID = $('#selectChancellor').val()
+        console.log('submit chancellorID: ' + chancellorID)
+
+        let playerMessage = {
+          "gameID" : getCookieValue('gameID'),
+          "presidentID" : getCookieValue('playerID'),
+          "chancellorID" : chancellorID
+        }
+
+        let wsPayload = {
+          "origin": "peer",
+          "subject": "select_chancellor",
+          "message": playerMessage
+        }
+
+        sendWSMessage(wsPayload)
+
+      });
+
+      $('#selectChancellorLock').click(function(){
+        let wsPayload = {
+          "origin": "peer",
+          "subject": "locked_in",
+          "message": {"gameID" : getCookieValue('gameID')}
+        }
+
+        sendWSMessage(wsPayload)
+
+        // Enable voting
+        $('#voteYes').prop("disabled",false)
+        $('#voteNo').prop("disabled",false)
+
+        // Disable nomination
+        $('#selectChancellor').prop("disabled",true)
+        $('#selectChancellorLock').addClass('d-none')
+
+        setCookieValue('locked_in' , 'true')
+
+        let data = { 
+          "game_id" : getCookieValue('gameID'),
+          "chancellor_id" : $('#selectChancellor').val()
+        }
+        fetch('chancellor_locked_in',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+
+        }).then(res => {return res.text()} )
+          .then(jsonRes => {
+           console.log(jsonRes)
+          })
+
+
+      })
+
+
+      // Policy Discard
+
+      // First click of discard button to show modal
+      $('#policySubmit').click(function(){
+        let value = $('input[name=policyRadio]:checked').val()
+        // console.log(value)
+        let imageSRC = ""
+        if (value == 'F'){
+          imageSRC = '/images/facist_policy_rounded.png'
+        } else {
+          imageSRC = '/images/liberal_policy_rounded.png'
+        }
+        let policyHTML = '<img src=\"' + imageSRC + '\">'
+        $('#policyDiscardModalCard').html(policyHTML)
+        $('#policyDiscardModal').modal('show')
+      });
+
+      // Second click of okay to actually discard
+      $('#policyDiscardSubmit').click(function() {
+        let value = $('input[name=policyRadio]:checked').val()
+        let remainingPolicies = ""
+        $('input[name=policyRadio]:not(:checked)').each(function(){
+          remainingPolicies += $(this).val() + ' '
+        })
+        // console.log("this is being discarded: " + value)
+        // console.log("pass these to the chancellor: " + remainingPolicies)
+
+        // send message to everyone to update policy in hand value
+        peerMessage = {
+          "origin" : 'peer',
+          "subject" : 'chancellor_policies',
+          "message" : {
+            "gameID" : getCookieValue('gameID'),
+            "chancellorID": getCookieValue('chancellorID'),
+            "policies" : remainingPolicies
+          }
+        }
+        sendWSMessage(peerMessage)
+
+        reaminingParsedPolicies = remainingPolicies.trim().split(' ')
+
+        if (reaminingParsedPolicies.length == 2) {
+
+
+
+          let data = { 
+            "game_id" : getCookieValue('gameID'),
+            "discard" : value,
+            "policies_in_hand" : reaminingParsedPolicies
+          }
+          fetch('president_policy_discard',
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+
+          }).then(res => {return res.text()} )
+            .then(jsonRes => {
+             console.log(jsonRes)
+            })
+        } else if (reaminingParsedPolicies.length == 1) {
+          let data = { 
+            "game_id" : getCookieValue('gameID'),
+            "discard" : value,
+            "enact" : reaminingParsedPolicies[0]
+          }
+          fetch('policy_enactment',
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+
+          }).then(res => {return res.text()} )
+            .then(jsonRes => {
+             console.log(jsonRes)
+            })
+
+        }
+      });
+
+
+      // Executive Action
+      $('#executiveActionSubmit').click(function() {
+        let executiveActionData = {}
+        executiveActionData["game_id"] = getCookieValue("gameID")
+        executiveActionData["executive_action"] = getCookieValue("executiveAction")
+
+        if (amIPresident()) {
+          executiveAction(executiveActionData)
+        }
+
+      });
+
+      $('#selectPlayer').change(function() {
+        if ($('#selectPlayer').val() == ""){
+          if (getCookieValue('executiveAction') == 'special_election'){
+             $('#specialElectionSubmit').addClass('d-none')
+          } else {
+            $('#investigateOrExecutionSubmit').addClass('d-none')
+          }
+        } else {
+          if (getCookieValue('executiveAction') == 'special_election'){
+             $('#specialElectionSubmit').removeClass("d-none")
+          } else {
+            $('#investigateOrExecutionSubmit').removeClass("d-none")
+          }
+        }
+      });
+
+      $('#investigateOrExecutionSubmit').click(function() {
+        // console.log($('#selectPlayer').val())
+        //{executive_action: string, game_id: string}
+        let executiveActionData = {
+          "executive_action" : getCookieValue('executiveAction'),
+          "game_id" : getCookieValue('gameID'),
+          "player_id" : $('#selectPlayer').val()
+        }
+        $('#executiveActionModal').modal('hide')
+        $('#fakeLoad').modal('show')
+        executiveAction(executiveActionData)
+      
+
+      });
+
+      $('#specialElectionSubmit').click(function() {
+        // console.log($('#selectPlayer').val())
+        //{executive_action: string, game_id: string}
+        let data = {"game_id" : getCookieValue('gameID'), "player_id" : $('#selectPlayer').val()}
+        console.log(data)
+        fetch('next_turn',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+
+        }).then(res => {return res.text()} )
+          .then(jsonRes => {
+           console.log(jsonRes)
+        })
+        $("#selectPlayer option:selected").prop("selected", false)
+        $('#executiveActionModal').modal('hide')
+        $('#fakeLoad').modal('show')
+
+      });
+
+      $('#executiveActionResultSubmit').click(function() {
+        let data = {"game_id" : getCookieValue('gameID')}
+        fetch('next_turn',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+
+        }).then(res => {return res.text()} )
+          .then(jsonRes => {
+           console.log(jsonRes)
+          })
+      });
+
+      $('#vetoPower').click(function() {
+        let peerMessage = {
+          "origin" : 'peer',
+          "subject" : 'chancellorEnactVetoPower',
+          "message" : {
+            "gameID" : getCookieValue('gameID')
+          }
+        }
+
+        sendWSMessage(peerMessage)
+      });
+
+      $('#vetoApprove').click(function(){
+        let data = { 
+          "game_id" : getCookieValue('gameID'),
+          "discard" : "Null",
+          "enact" : "Null"
+        }
+        fetch('policy_enactment',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+
+        }).then(res => {return res.text()} )
+          .then(jsonRes => {
+           console.log(jsonRes)
+          })
+        let peerMessage = {
+          "origin" : 'peer',
+          "subject" : 'presidentApproveVetoPower',
+          "message" : {
+            "gameID" : getCookieValue('gameID')
+          }
+        }
+
+        sendWSMessage(peerMessage)
+      });
+
+      $('#vetoDeny').click(function(){
+        let peerMessage = {
+          "origin" : 'peer',
+          "subject" : 'presidentDenyVetoPower',
+          "message" : {
+            "gameID" : getCookieValue('gameID')
+          }
+        }
+
+        sendWSMessage(peerMessage)
+      });
+
+      
+
+
+
+      
+      
+      reloadGameUponRefresh();
+      WebSocketEstablish();
+    });
+    
+
 
 </script>

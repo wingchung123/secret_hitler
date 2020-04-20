@@ -34,7 +34,7 @@ def test_deck_shuffle_if_2_or_less():
 
 	event = {
 		'game_id': gameID,
-		'discard': ['L', 'F'],
+		'discard': 'L,F',
 		'enact': 'F'
 
 	}
@@ -71,7 +71,7 @@ def test_enact_liberal_policy(): # assert discard pile
 
 	event = {
 		'game_id': gameID,
-		'discard': ['L', 'F'],
+		'discard': 'L,F',
 		'enact': 'L'
 
 	}
@@ -105,7 +105,7 @@ def test_enact_liberal_policy_end_game():
 
 	event = {
 		'game_id': gameID,
-		'discard': ['L', 'F'],
+		'discard': 'L,F',
 		'enact': 'L'
 
 	}
@@ -141,7 +141,7 @@ def test_enact_facist_policy():
 
 	event = {
 		'game_id': gameID,
-		'discard': ['L', 'F'],
+		'discard': 'L,F',
 		'enact': 'F'
 
 	}
@@ -175,7 +175,7 @@ def test_enact_facist_policy_end_game():
 
 	event = {
 		'game_id': gameID,
-		'discard': ['L', 'F'],
+		'discard': 'L,F',
 		'enact': 'F'
 
 	}
@@ -212,7 +212,7 @@ def test_enact_facist_policy_veto_power():
 
 	event = {
 		'game_id': gameID,
-		'discard': ['L', 'F'],
+		'discard': 'L,F',
 		'enact': 'F'
 
 	}
@@ -246,7 +246,7 @@ def test_enact_facist_policy_party_investigation():
 
 	event = {
 		'game_id': gameID,
-		'discard': ['L', 'F'],
+		'discard': 'L,F',
 		'enact': 'F'
 
 	}
@@ -284,7 +284,7 @@ def test_enact_facist_policy_policy_peek():
 
 	event = {
 		'game_id': gameID,
-		'discard': ['L', 'F'],
+		'discard': 'L,F',
 		'enact': 'F'
 
 	}
@@ -321,7 +321,7 @@ def test_enact_facist_policy_player_execution():
 
 	event = {
 		'game_id': gameID,
-		'discard': ['L', 'F'],
+		'discard': 'L,F',
 		'enact': 'F'
 
 	}
@@ -358,7 +358,7 @@ def test_enact_facist_policy_player_execution_veto_power():
 
 	event = {
 		'game_id': gameID,
-		'discard': ['L', 'F'],
+		'discard': 'L,F',
 		'enact': 'F'
 
 	}
@@ -397,7 +397,7 @@ def test_enact_facist_policy_special_election():
 
 	event = {
 		'game_id': gameID,
-		'discard': ['L', 'F'],
+		'discard': 'L,F',
 		'enact': 'F'
 
 	}

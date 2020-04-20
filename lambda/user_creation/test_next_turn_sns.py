@@ -50,6 +50,7 @@ def test_no_president_exists():
 	assert snsData['previousChancellorID'] == 'Null'
 	assert snsData['electionTracker'] == 0
 	assert game_info['currentPresidentID'] == '1'
+	assert snsData['gameID'] == gameID
 
 
 
@@ -86,6 +87,8 @@ def test_president_exists():
 	assert snsData['previousChancellorID'] == 'Null'
 	assert snsData['electionTracker'] == 0
 	assert game_info['currentPresidentID'] == '4'
+	assert snsData['gameID'] == gameID
+
 
 
 
@@ -122,6 +125,7 @@ def test_president_exists_last_player():
 	assert snsData['previousChancellorID'] == 'Null'
 	assert snsData['electionTracker'] == 0
 	assert game_info['currentPresidentID'] == '1'
+	assert snsData['gameID'] == gameID
 
 
 
@@ -158,6 +162,7 @@ def test_president_exists_w_executed_players():
 	assert snsData['previousChancellorID'] == 'Null'
 	assert snsData['electionTracker'] == 0
 	assert game_info['currentPresidentID'] == '2'
+	assert snsData['gameID'] == gameID
 
 
 def test_president_exists_special_election():
@@ -194,6 +199,7 @@ def test_president_exists_special_election():
 	assert snsData['previousChancellorID'] == 'Null'
 	assert snsData['electionTracker'] == 0
 	assert game_info['currentPresidentID'] == '5' # special election doesn't affect original order
+	assert snsData['gameID'] == gameID
 
 
 

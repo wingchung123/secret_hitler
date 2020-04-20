@@ -1,0 +1,10 @@
+<br/>
+<div class="form-group">
+<label for="selectInvestigate">Select player to investigate:</label>
+<select class="form-control" id="selectInvestigate">
+  <option></option>
+  <% for (var i=0; i < list_of_players.length; i++) { %>
+    <option value="<%= list_of_players[i].playerID%>"><%= list_of_players[i].playerName%></option>
+<% } %>
+</select>
+</div>

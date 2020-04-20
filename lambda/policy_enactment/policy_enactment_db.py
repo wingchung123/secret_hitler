@@ -32,7 +32,7 @@ def return_executive_action(numberOfPlayers, numberOfFacistPoliciesEnacted):
 # Writes to DB the policies to enact/discard
 # @inputs
 # 	enact string ex. 'F'
-#	discard list ex. ['L', 'F']
+#	discard list ex. L,F
 #	gameID
 # @outputs
 # 	statusCode
@@ -41,7 +41,7 @@ def return_executive_action(numberOfPlayers, numberOfFacistPoliciesEnacted):
 def lambda_function(event, context=None):
 	try:
 		currentGameID = str(event['game_id'])
-		discard = event['discard']
+		discard = event['discard'].split(',')
 		enactPolicy = event['enact']
 	except:
 		raise Exception('Error: Missing one or more parameters [99]')

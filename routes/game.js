@@ -13,4 +13,19 @@ router.post('/join_game', helper.validate_game_id, game_c.joingame);
 
 
 router.get('/start_game', helper.get_game_details, game_c.game_board_page)
+
+router.post('/new_player_event', game_c.new_player_event)
+router.post('/new_policies_event', game_c.new_policies_event)
+router.post('/new_policies_radio_event', game_c.new_policies_radio_event)
+router.post('/chancellor_locked_in', game_c.chancellor_locked_in)
+router.post('/president_policy_discard', game_c.president_policy_discard)
+router.post('/policy_enactment', game_c.policy_enactment)
+router.post('/executive_action', game_c.executive_action)
+router.post('/next_turn', game_c.next_turn)
+router.post('/investigate_loyalty_select', game_c.investigate_loyalty_select)
+
+
+router.post('/voting', game_c.voting)
+
+
 module.exports = router;

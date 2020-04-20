@@ -1,5 +1,12 @@
 <% include ../partial/header %>
-
+<% include president_modal %>
+<% include policies_modal %>
+<% include policy_discard_modal %>
+<% include executive_action_modal %>
+<% include executive_action_result_modal %>
+<% include veto_president_modal %>
+<% include veto_chancellor_modal %>
+<% include fakeLoad %>
 
 	<body>
 		<!-- Body -->
@@ -8,23 +15,156 @@
 				<div class="col-sm-8">
 					
 					<div class="container my-0 text-align" >
-						<img src="<%=helper.get_image_url(number_of_players,true,Number(number_of_facist_policies_enacted))%>" width="100%", height="100%">
+						<img id="facist_board" src="<%=helper.get_image_url(number_of_players,true,Number(number_of_facist_policies_enacted))%>" width="100%", height="100%">
+					</div>
+					<div class="container my-0 mt-0 text-center">
+						<img id="election_tracker" src="/images/tracker/election_tracker_<%=electionTracker%>.png" width="50%", height="50%">
 					</div>
 					<div class="container my-0 mt-0 text-align">
-						<img src="<%=helper.get_image_url(number_of_players,false,Number(number_of_liberal_policies_enacted))%>" width="100%", height="100%">
+						<img id="liberal_board" src="<%=helper.get_image_url(number_of_players,false,Number(number_of_liberal_policies_enacted))%>" width="100%", height="100%">
 					</div>
 				</div>
-				<div class="col-sm-4 mt-4">
-					<div class="container" id="playersDisplay">
+				<div class="col-sm-4 mt-4 pl-0">
+<!-- 					<div class="container" id="playersDisplay">
 						<% for (var i=0; i < list_of_players.length; i++) { %>
 							<div class="card my-2">
-								<div class="card-body py-1"><%= list_of_players[i] %></div>
+								<div class="card-body py-1"><%= list_of_players[i].playerName %><span class="badge badge-primary badge-pill">14</span></div>
+
 							</div>
 						<% } %>
-					</div>
-					<div class="container" id="yesOrNo">
+					</div> -->
+					<div class="container mb-3">
+						<div class="accordion" id="playerAccordion">
+							  <div class="card">
+							    <div class="card-header py-1 px-1" id="playerHeading">
+							      <h3 class="my-0">
+							        <button class="btn btn-block" type="button" data-toggle="collapse" data-target="#players" aria-expanded="true" aria-controls="players">
+							          Players
+							        </button>
+							      </h3>
+							    </div>
 
+							    <div id="players" class="collapse show" aria-labelledby="playerHeading" data-parent="#playerAccordion">
+							      <div class="card-body" id="snsAddPlayerHere">
+							      	<% for (var i=0; i < list_of_players.length; i++) { %>
+										<div class="card my-2 text-center">
+											<div class="card-body py-1 rounded" id="player<%=list_of_players[i].playerID%>_text"><%= list_of_players[i].playerName %><span id="previousPresident_<%=list_of_players[i].playerID%>" class="badge badge-danger badge-pill ml-2 d-none previousPresident" data-toggle="tooltip" data-placement="top" title="President Last Election">P</span><span id="previousChancellor_<%=list_of_players[i].playerID%>" class="badge badge-danger badge-pill ml-2 d-none previousChancellor" data-toggle="tooltip" data-placement="top" title="Chancellor Last Election">C</span><span id="presidentElect_<%=list_of_players[i].playerID%>" class="badge badge-primary badge-pill ml-2 d-none presidentElect" data-toggle="tooltip" data-placement="top" title="President Elect">P</span><span id="chancellorElect_<%=list_of_players[i].playerID%>" class="badge badge-primary badge-pill ml-2 d-none chancellorElect" data-toggle="tooltip" data-placement="top" title="Chancellor Elect">C</span></div>
+										</div>
+									<% } %>
+							      </div>
+							    </div>
+							  </div>
+						</div>
 					</div>
+					<div class="container mb-3">
+						<div class="accordion" id="actionAccordion">
+							  <div class="card">
+							    <div class="card-header py-1 px-1" id="actionHeading">
+							      <h3 class="my-0">
+							        <button class="btn btn-block" type="button" data-toggle="collapse" data-target="#actions" aria-expanded="true" aria-controls="actions">
+							          Voting
+							        </button>
+							      </h3>
+							    </div>
+
+							    <div id="actions" class="collapse show" aria-labelledby="actionHeading" data-parent="#actionAccordion">
+							      <div class="card-body">
+							      	<% if (chancellorID == 'Null') { %>
+							      		<button id="voteYes" class="btn btn-block btn-outline-secondary" type="button"disabled>Ja!</button>
+							      		<button id="voteNo" class="btn btn-block btn-dark" type="button" disabled>Nein!</button>
+							      	<% } else { %> 
+							      		<button id="voteYes" class="btn btn-block btn-outline-secondary" type="button">Ja!</button>
+							      		<button id="voteNo" class="btn btn-block btn-dark" type="button">Nein!</button>
+							      	<% } %> 
+							      	
+							      </div>
+							    </div>
+							  </div>
+						</div>
+					</div>
+					<div class="container">
+						<div class="accordion d-none" id="chancellorSelectionAccordion">
+							  <div class="card">
+							    <div class="card-header py-1 px-1 bg-info" id="chancellorSelectionHeading">
+							      <h3 class="my-0 ">
+							        <button class="btn btn-block text-light" type="button" data-toggle="collapse" data-target="#chancellorSelection" aria-expanded="true" aria-controls="chancellorSelection">
+							          Chancellor Selection
+							        </button>
+							      </h3>
+							    </div>
+
+							    <div id="chancellorSelection" class="collapse show" aria-labelledby="chancellorSelectionHeading" data-parent="#chancellorSelectionAccordion">
+							      <div class="card-body">
+							      	  <div class="form-group">
+									    <label for="selectChancellor">Select your chancellor:</label>
+									    <select class="form-control" id="selectChancellor">
+									    	<option></option>
+									    	<% for (var i=0; i < list_of_players.length; i++) { %>
+									    		<% if (list_of_players[i].playerID != presidentID && list_of_players[i].playerID != previousChancellorID && (list_of_players[i].playerID != previousPresidentID || number_of_players == 5) ) { %>
+									    		<option value="<%= list_of_players[i].playerID%>"><%= list_of_players[i].playerName%></option>
+									    		<% } %>
+											<% } %>
+									    </select>
+									  </div>
+  									  <!-- <button id="selectChancellorSubmit" class="btn btn-block btn-outline-primary" type="button" disabled>Nominate</button> -->
+  									  <button id="selectChancellorLock" class="btn btn-block btn-success d-none" type="button">Lock In Selection</button>
+							      </div>
+							    </div>
+							  </div>
+						</div>
+					</div>
+
+					<div class="container">
+						<div class="accordion d-none" id="policyAccordion">
+							  <div class="card">
+							    <div class="card-header py-1 px-1 bg-info" id="policyHeading">
+							      <h3 class="my-0 ">
+							        <button class="btn btn-block text-light" type="button" data-toggle="collapse" data-target="#policySelection" aria-expanded="true" aria-controls="policySelection">
+							          Policies
+							        </button>
+							      </h3>
+							    </div>
+
+							    <div id="policySelection" class="collapse show" aria-labelledby="policyHeading" data-parent="#policyAccordion">
+							      <div class="card-body">
+							      	  <div class="form-group">
+									    <label for="policySelection">Discard one of the following:</label>
+									    <div class="row" id="policies">
+
+									    	<% for (var i=0; i < policies_in_hand.length; i++) { %>
+
+									    		<% if (policies_in_hand[i] == 'F') { %>
+									    			<div class="col-sm-4">
+											    	<img id="policy_<%=i+1%>" src="/images/facist_policy_rounded.png" alt="#" width="100%", height="100%">
+											    	</div>
+									    		<% } else if (policies_in_hand[i] == 'L') { %>
+									    			<div class="col-sm-4">
+											    	<img id="policy_<%=i+1%>" src="/images/liberal_policy_rounded.png" alt="#" width="100%", height="100%">
+											    	</div>
+									    		<% } %>
+
+									    	<% } %>
+									    </div>
+									    <div class="row text-center" id="policiesRadio">
+									    	<% for (var i=0; i < policies_in_hand.length; i++) { %>
+
+									    		<label class="radio-inline col-sm-4">
+									    			<input value="<%=policies_in_hand[i]%>" id="radio_<%=i+1%>" type="radio" name="policyRadio">
+									    		</label>
+
+									    	<% } %>
+									    </div>
+									  </div>
+  									  <!-- <button id="selectChancellorSubmit" class="btn btn-block btn-outline-primary" type="button" disabled>Nominate</button> -->
+  									  <button id="policySubmit" class="btn btn-block btn-danger" type="button">Discard</button>
+  									  <button id="vetoPower" class="btn btn-block btn-warning" type="button">Use Veto Power</button>
+							      </div>
+							    </div>
+							  </div>
+						</div>
+					</div>
+
+
 				</div>
 
 			</div>

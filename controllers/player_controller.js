@@ -14,6 +14,7 @@ exports.index_page = function(req, res, next) {
 		res.redirect(error) //also redirects if ejs fails to render i.e. variable names don't match with input args
 	} else {
 		res.render('player/index', { 
+			game_id: req.cookies.gameID,
 			player_name: data.playerName, 
 			role: data.playerRole, 
 			number_of_players: data.numberOfPlayers,

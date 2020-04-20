@@ -70,6 +70,8 @@ Nodemon has been installed for dev. Code changes automatically applied
 | --------------- |--------------------| -----------|
 | Force Player Login| When a user wants to rejoin a game (via cookie) but they enter the incorrect game ID so it overwrites the original cookie gameID| Add a button on player create the opens a new dialogue. First check to see if name exists for that game id, if it does, have the function return player id, log it in the cookie and proceed to player index |
 | Region agnostic| Currently, the region is all defaulted to us-east-1 in AWS infrastructure as well as app.js SNS subscription | not sure|
+| if you reload at any point, you will lose most game data? Especially if President||
+| make sure to check every SNS/Peer message has a gameID otherwise everyone will get notified||
 
 
 
@@ -90,3 +92,23 @@ Nodemon has been installed for dev. Code changes automatically applied
 | Test Scenario   | Table    | Unique ID       | Test Case |
 | --------------- |----------| --------------- |-----------|
 | All players are created | secret-hitler-players | gameID = 1 | lambda user_creation|
+
+
+
+## Cookie Management
+
+
+|  Cookie Name  | Function Set | Used for | Source |
+| ------------- |--------------| -------- | ------ |
+| playerID | index_controller.create_player | identifying player| client input
+| gameID | index_controller.create_game | identifying game| client input
+| numberOfPlayers | helper.get_game_details | counting TOTAL players | DynamoDB.secret-hitler
+| \{playerID\}=\{playerName\}| helper.get_game_details OR websocket.snsParseEvent | deconstructed list of players | DynamoDB.secret-hitler OR sns notification
+| playerName | helper.get_player_details OR index_controller.create_player | player display name | DynamoDB.player OR client input
+| role | helper.get_player_details | player role| DynamoDB.secret-hitler-players
+| presidentID | websocket.peerParseEvent | selected presidentID | peer notification
+| chancellorID | websocket.peerParseEvent | selected chancellorID | peer notification
+| previousPresidentID | websocket.snsParseEvent | previous president ID | sns notification
+| previousChancellorID | websocket.snsParseEvent | previous chancellor ID | sns notification
+
+

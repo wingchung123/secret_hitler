@@ -6,17 +6,22 @@ var express = require('express');
 var router = express.Router();
 var request = require('request')
 
+// var WebSocketClient = require('websocket').client;
+// var client = new WebSocketClient();
+
+const WebSocket = require('ws')
 
 
 router.post('/', function(req, res, next) {
+	const ws = new WebSocket('ws://localhost:5000')
 
 //console.log(req.headers);
 	headerJson = JSON.parse( JSON.stringify(req.headers) )
-	console.log(headerJson)
+	// console.log(headerJson)
 
-	console.log("the following is body")
 	bodyJson = JSON.parse(JSON.stringify(req.body))
-	console.log(bodyJson)
+	// 	console.log("the following is body")
+	// console.log(bodyJson)
 
 	if ( headerJson['x-amz-sns-message-type']  == 'SubscriptionConfirmation' ) {
 		console.log("need to confirm subscription")
@@ -24,19 +29,46 @@ router.post('/', function(req, res, next) {
 	} else {
 		//parsing message
 		console.log(bodyJson["Subject"])
-		switch (bodyJson.Subject) {
+		wsPayload = {}
+		wsPayload.subject = bodyJson["Subject"]
+		wsPayload.message = JSON.parse(bodyJson.Message)
+		wsPayload.origin = 'sns'
 
-		case "Testing":
-			console.log("This is testing");
-			dataJson = JSON.parse(bodyJson.Message)
-			console.log(dataJson)
-			console.log(typeof dataJson)
-			console.log(dataJson.data)
-			break;
-		case "Testing2":
-			console.log("This is testing2");
-			break;
-		}
+
+		ws.on('open', function open(){
+			console.log("socket is open")
+			ws.send(JSON.stringify(wsPayload))
+			ws.close()
+
+		})
+		ws.on('error', function error(error){
+			console.log(error)
+			
+		})
+
+		// // create websocket client
+		// client.on('connect', function(connection) {
+		// 	console.log('WebSocket Client Connected: ' + connection.socket);
+
+
+
+		// 	connection.on('error', function(error) {
+		// 		console.log("Connection Error: " + error.toString());
+		// 	});
+		// 	connection.on('close', function() {
+		// 		console.log('Connection Closed...');
+		// 	});
+
+		// 	connection.sendUTF('This is sent from within SNS router')
+		// 	connection.sendUTF(dataJson)
+
+		// 	connection.close()
+
+		// });
+
+		// client.connect('ws://localhost:5000')
+
+
 	}
 
 	res.sendStatus(200);

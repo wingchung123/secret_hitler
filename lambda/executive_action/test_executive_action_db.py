@@ -332,6 +332,8 @@ def test_execution_not_hitler():
 	for player in currentGame['players']:
 		assert player['playerID'] != '1'
 
+	currentGame['executedPlayers'][0]['playerID'] == '1'
+
 	assert playerInfo['isAlive'] == False
 
 

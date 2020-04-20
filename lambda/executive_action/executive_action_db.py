@@ -70,6 +70,13 @@ def lambda_function(event, context=None):
 
 		if player['role'] == 'H':
 			return "Liberals Win; Hitler is killed."
+			event = {'end_game_status' : 'L2'}
+
+			response = lambdaClient.invoke(
+				FunctionName='secret-hitler-end-game',
+				InvocationType='Event',
+				LogType='None',
+				Payload=json.dumps(event));
 
 		player['isAlive'] = False
 
@@ -79,14 +86,16 @@ def lambda_function(event, context=None):
 			if thisPlayerID == playerID:
 				index = i
 
-		del currentGame['players'][index]
+		executedPlayer = currentGame['players'].pop(index)
+		currentGame['executedPlayers'].append(executedPlayer)
 
 
 		resp = gameTable.update_item(
 		        Key={"game": currentGameID},
-		        UpdateExpression="set players = :pl",
+		        UpdateExpression="set players = :pl, executedPlayers = :ep",
 		        ExpressionAttributeValues={
-		            ':pl' : currentGame['players']
+		            ':pl' : currentGame['players'],
+		            ':ep' : currentGame['executedPlayers']
 		})
 
 		resp = playerTable.update_item(

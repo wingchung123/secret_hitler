@@ -14,8 +14,8 @@ router.post('/createGame', urlencodedParser, index_c.create_game)
 router.get('/createPlayer', index_c.create_player_page);
 router.post('/createPlayer', urlencodedParser, index_c.create_player)
 
+router.post('/forceJoin', urlencodedParser, index_c.force_join)
 
 
-router.get('/displayCookie', index_c.display_cookie)
 
 module.exports = router;

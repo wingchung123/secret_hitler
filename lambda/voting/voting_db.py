@@ -70,13 +70,3 @@ def lambda_function(event, context=None):
 
 
 
-	
-
-
-# event={
-# 	"gameID" : "3"
-# }
-
-#pp.pprint(lambda_function(event))
-
-

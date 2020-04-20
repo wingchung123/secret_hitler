@@ -1,0 +1,13 @@
+<% for (var i=0; i < policies_in_hand.length; i++) { %>
+
+	<% if (policies_in_hand[i] == 'F') { %>
+		<div class="col-sm-4">
+    	<img id="policy_<%=i+1%>" src="/images/facist_policy_rounded.png" alt="#" width="100%", height="100%">
+    	</div>
+	<% } else if (policies_in_hand[i] == 'L') { %>
+		<div class="col-sm-4">
+    	<img id="policy_<%=i+1%>" src="/images/liberal_policy_rounded.png" alt="#" width="100%", height="100%">
+    	</div>
+	<% } %>
+
+<% } %>

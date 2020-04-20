@@ -17,6 +17,7 @@
 						<div class="col-sm-4 " id="numPlayersInput">
 							<label for="numPlayers">Number of players:</label>
 							<select class="form-control" id="numPlayers" name="numPlayers">
+								<option></option>
 								<option>5</option>
 								<option>6</option>
 								<option>7</option>
@@ -26,7 +27,7 @@
 							</select>
 						</div>
 					</div>
-					<input type="submit" value="Start Game!" class="btn btn-outline-primary">
+					<input id="createGameButton" type="submit" value="Start Game!" class="btn btn-outline-primary" disabled>
 				</form>
 			</div>
 			<p>OR</p>
@@ -36,4 +37,14 @@
 		</div>
 	</body>
 </html> 
-<!-- test -->
+<script type="text/javascript">
+	$(document).ready(function (){
+		$('#numPlayers').change(function (){
+			if ($('#numPlayers').val() == ""){
+				$('#createGameButton').prop("disabled",true)
+			} else {
+				$('#createGameButton').removeAttr("disabled")
+			}
+		})
+	})
+</script>

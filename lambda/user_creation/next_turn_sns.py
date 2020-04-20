@@ -31,12 +31,23 @@ def lambda_function(event, context=None):
 	currentGameID = str(event['game_id'])
 	gameTable = dynamodb.Table('secret-hitler-test')
 
+	# clear out currentChancellorID
+	currentChancellorID = 'Null'
+	resp = gameTable.update_item(
+		Key={"game": currentGameID},
+		UpdateExpression="set currentChancellorID = :c",
+		ExpressionAttributeValues={
+		    ':c' : currentChancellorID
+	})
+
 	returnValue = {
 		"presidentID": "",
 		"prevPresidentID": "",
 		"prevChancellorID": "",
 		"electionTracker": 0,
-		"listOfPlayers": [] # must be list of maps/dicts of playerIDs & playerNames
+		"listOfPlayers": [], # must be list of maps/dicts of playerIDs & playerNames
+		"executedPlayers" : [],
+		"gameID" : currentGameID
 	}
 
 	currentGame = get_game_info(currentGameID)
@@ -66,6 +77,8 @@ def lambda_function(event, context=None):
 		returnValue['previousChancellorID'] = str(currentGame['previousChancellorID'])
 		returnValue['electionTracker'] = int(currentGame['electionTracker'])
 		returnValue['listOfPlayers'] = currentGame['players']
+		returnValue['executedPlayers'] = currentGame['executedPlayers']
+
 
 
 		# needs to write to db the current president ID
@@ -85,6 +98,8 @@ def lambda_function(event, context=None):
 		returnValue['previousChancellorID'] = str(currentGame['previousChancellorID'])
 		returnValue['electionTracker'] = int(currentGame['electionTracker'])
 		returnValue['listOfPlayers'] = currentGame['players']
+		returnValue['executedPlayers'] = currentGame['executedPlayers']
+
 
 		# don't write to db so if special election fails it runs it back to original ordre
 

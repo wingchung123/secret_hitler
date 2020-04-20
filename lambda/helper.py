@@ -120,8 +120,10 @@ def role_array(num_of_players):
     return (roles, num_liberals, num_facist)
         
 def create_test_game(numberOfPlayers=5, gameID="default_test", numberOfLiberalPoliciesEnacted=0,
-    numberOfFacistPoliciesEnacted=0, turn=0, players=[], currentPresidentID="Null", previousPresidentID="Null",
-    previousChancellorID="Null", electionTracker=0, vetoPower=False, policiesInHand=[], deck=[], discard=[]):
+    numberOfFacistPoliciesEnacted=0, turn=0, players=[], currentPresidentID="Null", currentChancellorID="Null",
+    previousPresidentID="Null", previousChancellorID="Null", electionTracker=0, vetoPower=False, 
+    policiesInHand=[], deck=[], discard=[],
+    executedPlayers=[], executiveAction="Null", endGameStatus="Null"):
 
     if deck == []:
         deck = ['L','L','L','L','L','L','F','F','F','F','F','F','F','F','F','F','F']
@@ -140,13 +142,17 @@ def create_test_game(numberOfPlayers=5, gameID="default_test", numberOfLiberalPo
         'turn': turn,
         'players': players,
         'currentPresidentID': currentPresidentID,
+        'currentChancellorID' : currentChancellorID,
         'previousPresidentID': previousPresidentID,
         'previousChancellorID': previousChancellorID,
         'electionTracker': electionTracker,
         'vetoPower': vetoPower,
         'policiesInHand' : policiesInHand,
         'deck': deck,
-        'discard': discard
+        'discard': discard,
+        'executedPlayers' : executedPlayers,
+        'executiveAction' : executiveAction,
+        'endGameStatus' : endGameStatus
     }
 
     return Item
