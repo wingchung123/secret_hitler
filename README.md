@@ -26,6 +26,7 @@ Dynamodb Docs: https://boto3.amazonaws.com/v1/documentation/api/latest/reference
 ## Useful docker commands 
 [Docker Guide](https://nodejs.org/en/docs/guides/nodejs-docker-webapp/)
 
+`eval $(docker-machine env default)` to configure terminal shell
 
 `docker-machine ip default` show docker-machine ip
 
