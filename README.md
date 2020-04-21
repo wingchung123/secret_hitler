@@ -32,7 +32,7 @@ Dynamodb Docs: https://boto3.amazonaws.com/v1/documentation/api/latest/reference
 
 `docker build -t wing/secret-hitler .` build image
 
-`docker run -p 49160:3000 --name test-env -d wing/secret-hitler ` run image on container; -d to run in background, -p to publish port & link to machine port
+`docker run -p 49160:3000 -p 5000:5000 --name test-env -d wing/secret-hitler ` run image on container; -d to run in background, -p to publish port & link to machine port
 
 `docker ps || docker container ls`
 
