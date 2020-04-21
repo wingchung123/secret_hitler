@@ -3,6 +3,36 @@
 <script type="text/javascript">
 
   const MAX_COOKIE_AGE = 4 * 60 * 60 //in seconds
+  const LOCAL_DEV = false
+  var WS_IP_ADDRESS = ""
+
+  function get_ip_address(callback){
+    if (LOCAL_DEV) {
+      WS_IP_ADDRESS = 'ws://localhost:5000'
+      callback()
+    } else {
+      console.log('trying to fetch ip address...')
+
+      fetch('http://169.254.169.254/latest/meta-data/public-ipv4',
+      {
+        method: 'GET'
+      }).then(res => {
+        console.log("meta-data response: " + res.text())
+        return res.text()
+      }).then(jsonRes => {
+          console.log("meta-data jsonRes: " + jsonRes)
+          WS_IP_ADDRESS = "ws://" + jsonRes.toString() + ":5000"
+          console.log("websocket IP: " + WS_IP_ADDRESS)
+          callback()
+        }).catch( error => {
+          console.log("Unable to get IP address... default to localhost")
+          WS_IP_ADDRESS = 'ws://localhost:5000'
+          callback()
+        })
+
+
+    }
+  }
 
   function get_image_url(numOfPlayers, isFacistBoard, numOfPoliciesEnacted) {
 
@@ -499,25 +529,27 @@
   function sendWSMessage(message){
 
     if ("WebSocket" in window) {
-           console.log("WebSocket is supported by your Browser!");
-           
-           // Let us open a web socket
-           let singleWS = new WebSocket("ws://localhost:5000")
+      console.log("WebSocket is supported by your Browser!");
+
+      console.log("websocket IP: " + WS_IP_ADDRESS)
+      let singleWS = new WebSocket(WS_IP_ADDRESS)
+
+       singleWS.onopen = function() {
+          // Web Socket is connected, send data using send()
+          singleWS.send(JSON.stringify(message))
+          singleWS.close()
+       };
+  
+       singleWS.onclose = function() { 
+          // websocket is closed.
+          console.log("singleWS connection is closed..."); 
+        };
       
-           singleWS.onopen = function() {
-              // Web Socket is connected, send data using send()
-              singleWS.send(JSON.stringify(message))
-              singleWS.close()
-           };
-      
-           singleWS.onclose = function() { 
-              // websocket is closed.
-              console.log("singleWS connection is closed..."); 
-           };
-        } else {
-           // The browser doesn't support WebSocket
-           console.log("WebSocket NOT supported by your Browser!");
-        }
+
+    } else {
+       // The browser doesn't support WebSocket
+       console.log("WebSocket NOT supported by your Browser!");
+    }
 
 
   }
@@ -526,48 +558,54 @@
             
         if ("WebSocket" in window) {
            console.log("WebSocket is supported by your Browser!");
-           
+
            // Let us open a web socket
-           var ws = new WebSocket("ws://localhost:5000")
-			
-           ws.onopen = function() {
-              // Web Socket is connected, send data using send()
-              console.log("Connected...");
-           };
-			
-           ws.onmessage = function (event) { 
-              var received_msg = JSON.parse(event.data);
-              console.log("Message is received...");
-              console.log("subject: " + received_msg.subject)
-              console.log("message/data: " + JSON.stringify(received_msg.message))
-
-
-              let thisGameID = getCookieValue('gameID')
-              if ( thisGameID == received_msg.message.gameID ) {
-                console.log("gameID matches... parsing message")
-                if (received_msg.origin == 'sns' ){
-                  //sns message from AWS
-                  $('#fakeLoad').modal('show')
-                  snsParseEvent(received_msg)
-                } else {
-                  // origin == 'peer'
-                  //broadcast from other players
-                  console.log(received_msg)
-                  peerParseEvent(received_msg)
-                }
-              } else {
-                //message was for another game
-              }
-
-
               
+              console.log("websocket IP: " + WS_IP_ADDRESS)
 
-           };
+              // let ws = new WebSocket("ws://localhost:5000")
+              ws = new WebSocket(WS_IP_ADDRESS)
+
+               ws.onopen = function() {
+                  // Web Socket is connected, send data using send()
+                  console.log("Connected...");
+               };
+          
+               ws.onmessage = function (event) { 
+                  var received_msg = JSON.parse(event.data);
+                  console.log("Message is received...");
+                  console.log("subject: " + received_msg.subject)
+                  console.log("message/data: " + JSON.stringify(received_msg.message))
+
+
+                  let thisGameID = getCookieValue('gameID')
+                  if ( thisGameID == received_msg.message.gameID ) {
+                    console.log("gameID matches... parsing message")
+                    if (received_msg.origin == 'sns' ){
+                      //sns message from AWS
+                      $('#fakeLoad').modal('show')
+                      snsParseEvent(received_msg)
+                    } else {
+                      // origin == 'peer'
+                      //broadcast from other players
+                      console.log(received_msg)
+                      peerParseEvent(received_msg)
+                    }
+                  } else {
+                    //message was for another game
+                  }
+
+
+                  
+
+               };
+          
+               ws.onclose = function() { 
+                  // websocket is closed.
+                  console.log("Connection is closed..."); 
+               };
 			
-           ws.onclose = function() { 
-              // websocket is closed.
-              console.log("Connection is closed..."); 
-           };
+
         } else {
           
            // The browser doesn't support WebSocket
@@ -1345,7 +1383,7 @@
       
       
       reloadGameUponRefresh();
-      WebSocketEstablish();
+      get_ip_address(WebSocketEstablish);
     });
     
 

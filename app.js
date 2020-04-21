@@ -5,7 +5,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
 const debug = false;
-const local = true; // **************** NEED TO CHANGE IN PRODUCTION *****************************
+const local = false; // **************** NEED TO CHANGE IN PRODUCTION *****************************
 
 var indexRouter = require('./routes/index');
 // var usersRouter = require('./routes/users');
