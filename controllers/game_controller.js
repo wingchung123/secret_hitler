@@ -35,6 +35,11 @@ exports.joingame_page = function(req, res, next) {
 	res.render('game/index', {game_id: 'Null'});
 };
 
+exports.end_game = function(req, res, next) {
+	// request(api_options, callback)
+	res.render('game/index', {game_id: 'Null'});
+};
+
 exports.game_board_page = function(req, res,next){
 	let data = res.locals.data
 	console.log(data)

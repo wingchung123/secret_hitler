@@ -541,6 +541,7 @@
               console.log("subject: " + received_msg.subject)
               console.log("message/data: " + JSON.stringify(received_msg.message))
 
+
               let thisGameID = getCookieValue('gameID')
               if ( thisGameID == received_msg.message.gameID ) {
                 console.log("gameID matches... parsing message")
@@ -686,6 +687,8 @@
     function snsParseEvent(snsEvent){
       var subject = snsEvent.subject
       var data = snsEvent.message
+
+      console.log(subject == 'end_game')
 
       switch (subject) {
         case 'new_player':
@@ -950,6 +953,7 @@
 
         case 'end_game':
           console.log('game ended: ' + data.end_game_status)
+          window.location.href = "end_game"
           break;
 
 

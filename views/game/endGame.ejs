@@ -1,0 +1,30 @@
+<% include ../partial/header %>
+
+
+	<body>
+		
+		<div class="container-fluid text-center" style="background-color: #ff6650;">
+			<img src="/images/logo1.png" width="500vw" height="300vh" alt="">
+		</div>
+
+		<div class="container text-center">
+			<% if (typeof status_code !== 'undefined' && status_code != 200) { %>
+				<div class="alert alert-danger mb-0 mt-3">
+					<strong>Error:</strong> Invalid Game Code. Please try again.
+				</div>
+			<% } %>
+			<div class= "my-3" id="joinGame">
+				<form action="/game/join_game" method="post">
+					<div class="row my-3">
+						<div class="col-sm-4"></div>
+						<div class="col-sm-4 " id="numPlayersInput">
+							<label for="gameCode">Game Code:</label>
+							<input type="text" class="form-control" id="gameCode" name="gameCode">
+						</div>
+					</div>
+					<input type="submit" value="Join Game!" class="btn btn-outline-primary">
+				</form>
+			</div>
+		</div>
+	</body>
+</html> 
