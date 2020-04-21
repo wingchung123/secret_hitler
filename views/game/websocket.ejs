@@ -695,6 +695,11 @@
       //after switch
     }
 
+    function getFacistIDs(){
+      let facistIDs = getCookieValue('fpids')
+      console.log(facistIDs)
+      return facistIDs.substring(0,facistIDs.length-1).split('F') //there's an extra semi-colon at the end
+    }
 
     function snsParseEvent(snsEvent){
       var subject = snsEvent.subject
@@ -723,6 +728,23 @@
                $("#snsAddPlayerHere").html(function(index,currentcontent){
                   return currentcontent + jsonRes
                })
+               let role = getCookieValue('role')
+               let number_of_players = getCookieValue('numberOfPlayers')
+               if (role== 'Facist' || (role=='Hitler' && number_of_players < 7)){
+                let hitlerID = getCookieValue('hpid')
+                let facistIDs = getFacistIDs()
+                facistIDs.forEach(function(item,index){
+                  if (item.toString() == playerID.toString()){
+                    let facistSelector = '#facist_' + playerID
+                    $(facistSelector).removeClass('d-none')
+                  }
+                })
+
+                if (hitlerID.toString() == playerID.toString()){
+                  let hitlerSelector = '#hitler_' + playerID
+                  $(hitlerSelector).removeClass('d-none')
+                }
+               }
               })
 
             // also add this player as a cookie
@@ -985,6 +1007,8 @@
       $('.previousChancellor').tooltip()
       $('.presidentElect').tooltip()
       $('.chancellorElect').tooltip()
+      $('.hitler').tooltip()
+      $('.facist').tooltip()
 
       $('#fakeLoad').on('show.bs.modal', function(e){
         setTimeout(function() {

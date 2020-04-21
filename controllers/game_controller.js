@@ -35,9 +35,15 @@ exports.joingame_page = function(req, res, next) {
 	res.render('game/index', {game_id: 'Null'});
 };
 
-exports.end_game = function(req, res, next) {
+exports.end_game_page = function(req, res, next) {
+	let data = res.locals.data
 	// request(api_options, callback)
-	res.render('game/index', {game_id: 'Null'});
+	res.render('game/endGame', {
+		game_id : req.cookies.gameID,
+		liberalPlayers : data.liberalPlayers,
+		facistPlayers : data.facistPlayers,
+		hitler : data.hitler
+	});
 };
 
 exports.game_board_page = function(req, res,next){
@@ -91,7 +97,8 @@ exports.game_board_page = function(req, res,next){
 			role: data.playerRole, 
 			player_name: data.playerName,
 			amIDead: amIDead,
-			ip_address: res.locals.ip_address
+			ip_address: res.locals.ip_address,
+			facistPlayers: data.facistPlayers
 		})
 	}
 

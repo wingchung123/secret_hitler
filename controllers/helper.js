@@ -6,11 +6,11 @@ const max_cookie_age = 3600000 * 4
 const list_of_cookies = ['numberOfPlayers', 'role', 'presidentID',
  'previousChancellorID', 'previousPresidentID',
  'numberOfFacistPoliciesEnacted', 'numberOfLiberalPoliciesEnacted',
- 'numberOfLiberalPolicies', 'numberOfFacistPolicies', 'vetoPower'] //also all the playerIDs // exclued chancellorID
+ 'numberOfLiberalPolicies', 'numberOfFacistPolicies', 'vetoPower', 'fpids', 'hpid'] //also all the playerIDs // exclued chancellorID
 
 const list_of_player_cookies = ['playerID', 'playerName']
 
-const list_of_game_created_cookies = ['chancellorID', 'locked_in', 'policiesInHand']
+const list_of_game_created_cookies = ['chancellorID', 'locked_in', 'policiesInHand', 'executiveAction']
 
 exports.api_url = api_url
 exports.api_key = api_key
@@ -191,7 +191,8 @@ exports.get_game_details = function get_game_details(req, res, next){
 			res.locals.data.electionTracker = api_resp.data.electionTracker
 			res.locals.data.policiesInHand = api_resp.data.policiesInHand
 			res.locals.data.executiveAction = api_resp.data.executiveAction
-			res.locals.data.playerID = req.cookies.playerID
+			res.locals.data.playerID = req.cookies.playerID,
+			res.locals.data.endGame = api_resp.data.endGameStatus
 
 		} catch (e) {
 			res.locals.gameDetailsError = e
@@ -228,7 +229,6 @@ exports.get_player_details = function get_player_details(req, res, next){
 			res.locals.message = api_resp.message
 		}
 		try {
-			console.log(req.cookies)
 			res.locals.playerDetailsStatusCode = api_resp.statusCode
 			res.locals.data.playerRole = parse_roles_policies(api_resp.data.role)
 			res.locals.data.playerName = api_resp.data.playerName
@@ -236,6 +236,114 @@ exports.get_player_details = function get_player_details(req, res, next){
 			res.locals.playerDetailsError = e
 		}
 
+
+		next()
+	})	
+
+}
+
+// requires get_game_details to be called first
+exports.get_facist_players = function get_facist_players(req, res, next){
+	console.log("inside helper.get_facist_players...")
+	const api_options = {
+		url: api_url + '/facist-players?game_id=' + req.cookies.gameID,
+		method: 'GET',
+		headers: api_key,
+		json: true
+	};
+	request(api_options, function(err,resp,body){
+		// console.log(resp)
+		api_resp = parse_api_resp(resp)
+		console.log(api_resp)
+		if (res.locals.data.playerRole == 'Facist' || (res.locals.data.playerRole == 'Hitler' && res.locals.data.numberOfPlayers < 7) ){
+			if(api_resp.statusCode == 200){
+			// res.cookie('playerID', api_resp.data.playerID, { maxAge: max_cookie_age}) //should be set already
+			// res.cookie('playerName', api_resp.data.playerName, { maxAge: max_cookie_age}) // should be set already //set again for force join
+			// // res.cookie('gameID', api_resp.data.gameID, { maxAge: max_cookie_age}) // should already have
+			// // res.cookie('isNull', api_resp.data.isNull, { maxAge: max_cookie_age}) // not needed
+			// res.cookie('role', parse_roles_policies(api_resp.data.role), { maxAge: max_cookie_age})
+			let fpids = ''
+			api_resp.data.forEach(function(item, index){
+				if (item.role == 'H') {
+					res.cookie('hpid', item.playerID, { maxAge: max_cookie_age})
+				} else {
+					fpids += item.playerID + 'F'
+				}
+			})
+			res.cookie('fpids', fpids, { maxAge: max_cookie_age})
+
+			} else {
+				res.locals.message = api_resp.message
+			}
+			try {
+				// console.log(res.locals.data.playerRole)
+				// console.log(res.locals.data.playerRole == 'F')
+				// console.log(res.locals.data.playerRole == 'Hitler')
+				// console.log(res.locals.data.numberOfPlayers < 7)
+				// console.log((res.locals.data.playerRole == 'H' && res.locals.data.numberOfPlayers < 7) )
+				// console.log((res.locals.data.playerRole == 'Facist' || (res.locals.data.playerRole == 'Hitler' && res.locals.data.numberOfPlayers < 7) ))
+				res.locals.data.facistPlayers = api_resp.data
+				
+			} catch (e) {
+				res.locals.playerDetailsError = e
+			}
+
+		}
+
+
+
+		next()
+	})	
+
+}
+
+// requires get_game_details to be called first
+exports.get_player_roles = function (req, res, next){
+	console.log("inside helper.get_player_roles...")
+	const api_options = {
+		url: api_url + '/player?game_id=' + req.cookies.gameID,
+		method: 'GET',
+		headers: api_key,
+		json: true
+	};
+	request(api_options, function(err,resp,body){
+		// console.log(resp)
+		api_resp = parse_api_resp(resp)
+		console.log(api_resp)
+		if(api_resp.statusCode == 200){
+		// res.cookie('playerID', api_resp.data.playerID, { maxAge: max_cookie_age}) //should be set already
+		// res.cookie('playerName', api_resp.data.playerName, { maxAge: max_cookie_age}) // should be set already //set again for force join
+		// // res.cookie('gameID', api_resp.data.gameID, { maxAge: max_cookie_age}) // should already have
+		// // res.cookie('isNull', api_resp.data.isNull, { maxAge: max_cookie_age}) // not needed
+		// res.cookie('role', parse_roles_policies(api_resp.data.role), { maxAge: max_cookie_age})
+		} else {
+			res.locals.message = api_resp.message
+		}
+		try {
+			let liberalPlayers = []
+			let facistPlayers = []
+			let hitler = {}
+
+			api_resp.data.forEach(function(item,index){
+				item.role = parse_roles_policies(item.role)
+				if (item.role == 'Hitler') {
+					hitler = item
+				} else if (item.role == 'Facist') {
+					facistPlayers.push(item)
+				} else if (item.role == 'Liberal') {
+					liberalPlayers.push(item)
+				}
+			})
+
+			res.locals.data.liberalPlayers = liberalPlayers
+			res.locals.data.facistPlayers = facistPlayers
+			res.locals.data.hitler = hitler
+			
+		} catch (e) {
+			res.locals.playerDetailsError = e
+		}
+
+	
 
 		next()
 	})	
