@@ -4,6 +4,7 @@
 
   const MAX_COOKIE_AGE = 4 * 60 * 60 //in seconds
   const LOCAL_DEV = false
+  const LOCAL_DOCKER_IP = 
   var WS_IP_ADDRESS = ""
 
   function get_ip_address(callback){
@@ -26,7 +27,7 @@
           callback()
         }).catch( error => {
           console.log("Unable to get IP address... default to localhost")
-          WS_IP_ADDRESS = 'ws://localhost:5000'
+          WS_IP_ADDRESS = 'ws://192.168.99.100:5000'
           callback()
         })
 
