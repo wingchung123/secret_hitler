@@ -53,6 +53,20 @@ Nodemon has been installed for dev. Code changes automatically applied
 
 
 
+## Deployment
+
+1. Test Locally
+
+2. Build docker image and test in local docker machine (make changes to Dockerfile if applicable)
+
+3. Run AWS Code Build to create new docker image in AWS ECR
+
+4. Spin up EC2 for ECS service (via ASG)
+
+5. 
+
+
+
 
 ## Nodejs Web Dev Tutorials
 
