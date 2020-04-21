@@ -34,6 +34,106 @@
 						<% } %>
 					</div> -->
 					<div class="container mb-3">
+						<div class="accordion" id="playerInfoAccordion">
+							  <div class="card">
+							    <div class="card-header py-1 px-1 bg-secondary" id="playerInfoHeading">
+							      <h3 class="my-0">
+							        <button class="btn btn-block text-white" type="button" data-toggle="collapse" data-target="#playerInfo" aria-expanded="true" aria-controls="playerInfo">
+							          <%= player_name %>
+							        </button>
+							      </h3>
+							    </div>
+
+							    <div id="playerInfo" class="collapse" aria-labelledby="playerHeading" data-parent="#playerInfoAccordion">
+							       <div class="container mt-3 mb-2 text-center">
+										<h5> Role:
+											<% if (role == 'Liberal') { %>
+												<span class="text-primary">
+											<% } else { %>
+												<span class="text-danger">
+											<% } %>
+											<%= role %></span></h5>
+									</div>
+		<!-- Body -->
+		<div class="container my-2 text-center">
+
+			<% switch (role) {
+				case 'Liberal' : %>
+				<div class="row my-2">
+					<div class="col-sm-4"></div>
+					<div class="col-sm-4">
+						<img src="/images/liberal.png" width="75vw" height="100vh">
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-sm-12">
+						<p class="my-2">2 ways to win:</p>
+						<ol class="text-left">
+							<li>Five Liberal Policies are enacted. <strong>OR</strong></li>
+							<li>Hitler is assassinated.</li>
+						</ol>
+					</div>
+				</div>
+				
+				<% break; case 'Facist' : %>
+				<div class="row my-2">
+					<div class="col-sm-4"></div>
+					<div class="col-sm-4">
+						<img src="/images/facist.png" width="75vw" height="100vh">
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-sm-12">
+						<p class="my-2">2 ways to win:</p>
+						<ol class="text-left">
+							<li>Six Fascist Policies are enacted. <strong>OR</strong></li>
+							<li>Hitler is elected Chancellor any time <strong>after</strong> the third Fascist Policy has been enacted.</li>
+						</ol>
+					</div>
+				</div>
+
+				<% break; case 'Hitler' : %>
+				<div class="row my-2">
+					<div class="col-sm-4"></div>
+					<div class="col-sm-4">
+						<img src="/images/hitler.png" width="75vw" height="100vh">
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-sm-12">
+						<p class="my-2">2 ways to win:</p>
+						<ol class="text-left">
+							<li>Six Fascist Policies are enacted. <strong>OR</strong></li>
+							<li>Hitler (you) are elected Chancellor any time <strong>after</strong> the third Fascist Policy has been enacted.</li>
+						</ol>
+					</div>
+				</div>
+				<% break;} %>
+
+				<div class="row">
+					<div class="col-sm-12">
+						<p class="my-2">Game Details:</p>
+						<ol class="text-left">
+							<li>There are <span class="text-danger"><%= number_of_facists %> facist </span>(including Hitler) and <span class="text-primary"><%= number_of_liberals %> liberals</span>.</li>
+							<li>There are 6 Liberal Policies and 11 Facist policies at the start of the game.</li>
+							<% if (number_of_players < 7) { %>
+							<li>Hitler & Facist(s) will know who each other are.
+							<% } else { %>
+							<li>Facists will know who Hitler is but Hitler will <strong>not</strong> know who the facist(s) are.
+							<% } %>
+						</ol>
+					</div>
+				</div>
+		</div>
+							    </div>
+							  </div>
+						</div>
+					</div>
+
+					<div class="container mb-3">
 						<div class="accordion" id="playerAccordion">
 							  <div class="card">
 							    <div class="card-header py-1 px-1" id="playerHeading">
@@ -56,7 +156,11 @@
 							  </div>
 						</div>
 					</div>
-					<div class="container mb-3">
+					<% if (amIDead) {%> 
+					<div id="votingContainer" class="container mb-3 d-none">
+					<% } else { %>
+					<div id="votingContainer" class="container mb-3">
+					<% } %>
 						<div class="accordion" id="actionAccordion">
 							  <div class="card">
 							    <div class="card-header py-1 px-1" id="actionHeading">

@@ -58,6 +58,12 @@ exports.game_board_page = function(req, res,next){
 	if (res.locals.gameDetailsStatusCode != 200){
 		res.redirect("/error") //also redirects if ejs fails to render i.e. variable names don't match with input args
 	} else {
+		let amIDead = false
+		data.executedPlayers.forEach(function(item,index){
+			if (data.playerID == item.playerID){
+				amIDead = true
+			}
+		});
 		res.render('game/board', { 
 			game_id: req.cookies.gameID,
 			helper : helper,
@@ -74,7 +80,12 @@ exports.game_board_page = function(req, res,next){
 			policies_in_hand : data.policiesInHand,
 			chancellorID: data.chancellorID,
 			executive_action : data.executiveAction,
-			playerID : data.playerID
+			playerID : data.playerID,
+			number_of_liberals: data.numberOfLiberals,
+			number_of_facists: data.numberOfFacists,
+			role: data.playerRole, 
+			player_name: data.playerName,
+			amIDead: amIDead
 		})
 	}
 

@@ -9,7 +9,7 @@
       image_url_value = ""
       if (isFacistBoard){
         if (numOfPlayers < 7 ) {
-          switch (numOfPoliciesEnacted) {
+          switch (parseInt(numOfPoliciesEnacted)) {
             case 0:
               image_url_value = '/images/boards/small/facist_board_5_6.png';
               break;
@@ -36,7 +36,7 @@
               break;
           }
         } else if (numOfPlayers < 9) {
-          switch (numOfPoliciesEnacted) {
+          switch (parseInt(numOfPoliciesEnacted)) {
             case 0:
               image_url_value = '/images/boards/medium/facist_board_7_8.png'
               break;
@@ -64,7 +64,7 @@
           }
 
         } else if (numOfPlayers < 11) {
-          switch (numOfPoliciesEnacted) {
+          switch (parseInt(numOfPoliciesEnacted)) {
             case 0:
               image_url_value = '/images/boards/large/facist_board_9_10.png'
               break;
@@ -97,7 +97,7 @@
           image_url_value = 'Invalid number of players'
         }
       } else {
-        switch (numOfPoliciesEnacted) {
+        switch (parseInt(numOfPoliciesEnacted)) {
           case 0:
             image_url_value = '/images/boards/liberal/liberal_board.png'
             break;
@@ -451,6 +451,7 @@
 
     } else if ( locked_in == 'true') {
       console.log("chancellor has been locked in... voting time")
+      // deleteCookieValue('locked_in')
       // chancellor is locked in, enable voting buttons
       // make sure chancellorID is not null
         $('#voteYes').prop("disabled",false)
@@ -460,6 +461,8 @@
       // default state; similar to after next_turn SNS
       // time to select a chancellor and lock it in
       console.log("chancellor section time")
+      $('#voteYes').prop("disabled",true)
+      $('#voteNo').prop("disabled",true)
       if (amIPresident() ){
 
         $('#presidentModal').modal('show')
@@ -740,14 +743,17 @@
           deleteCookieValue('chancellorID') // delete the old chancellorID
 
           $('#chancellorSelectionAccordion').addClass('d-none')
+          $('#chancellorSelection').prop("disabled",true)
           thisPlayerID = getCookieValue('playerID')
           if (amIPresident()){
             $('#presidentModal').modal('show')
             $('#chancellorSelectionAccordion').removeClass('d-none')
+            $('#chancellorSelection').prop("disabled",false)
           }
 
           //identify current president and display badge
           $('.presidentElect').addClass('d-none') // hide all
+          $('.chancellorElect').addClass('d-none')
           let selectedPresidentSelector = '#presidentElect_' + presidentID
           $(selectedPresidentSelector).removeClass('d-none')
 
@@ -769,10 +775,14 @@
             $(executedPlayerSelector).html(function(index,currentcontent){
               return "<s>" + currentcontent + "</s>"
             })
+
+            if (getCookieValue('playerID') == item.playerID){
+              $('#votingContainer').addClass('d-none')
+            }
           });
 
           // Add existing players as options in Chancellor Selection
-          let selectorHTML = ""
+          let selectorHTML = "<option value=\"\"></option>"
           let numberOfPlayers = getCookieValue('numberOfPlayers')
           data.listOfPlayers.forEach(function(item,index){
             if (item.playerID != presidentID && item.playerID != previousChancellorID && (item.playerID != previousPresidentID || numberOfPlayers == 5) ){
@@ -801,12 +811,31 @@
             "electionTracker",
             "listOfPlayers", ([{playerName, playerID}, ...]),
             "executedPlayers" ([{playerName, playerID}, ...]),
-            "gameID"
+            "gameID",
+            "numberOfFacistPoliciesEnacted",
+            "numberOfLiberalPoliciesEnacted"
           }
           *
           **/
+          // Hide Chancellor Selection, deselect & disable voting
+          $('#chancellorSelectionAccordion').addClass('d-none')
+          $("#selectChancellor option:selected").prop("selected", false)
+          $('#voteYes').prop("disabled",true)
+          $('#voteNo').prop("disabled",true)
           // if it's similar to next turn message, just call snsParse with new data
           if ( ("electionTracker" in data) ) {
+            // need to update election tracker and the boards
+            let electionTrackerImageSRC = "/images/tracker/election_tracker_" + data.electionTracker +".png"
+            console.log(data.numberOfFacistPoliciesEnacted)
+            console.log(getCookieValue('numberOfPlayers'))
+            let facistSRC = get_image_url(getCookieValue('numberOfPlayers'), true, data.numberOfFacistPoliciesEnacted)
+            let liberalSRC = get_image_url(getCookieValue('numberOfPlayers'), false, data.numberOfLiberalPoliciesEnacted)
+            console.log(facistSRC)
+            
+            $('#election_tracker').attr('src', electionTrackerImageSRC)
+            $('#facist_board').attr("src", facistSRC);
+            $('#liberal_board').attr("src", liberalSRC);
+
             let snsEvent = {}
             snsEvent.subject = 'next_turn'
             snsEvent.message = data
@@ -823,11 +852,6 @@
             setCookieValue('policiesInHand', policiesInHand.length)
             setCookieValue('vetoPower',vetoPower)
             setCookieValue('chancellorID',chancellorID)
-
-            // Hide Chancellor Selection & disable voting
-            $('#chancellorSelectionAccordion').addClass('d-none')
-            $('#voteYes').prop("disabled",true)
-            $('#voteNo').prop("disabled",true)
 
 
             // Clear out policies HTML & hide accordion
@@ -846,6 +870,17 @@
             }
 
           }
+
+          // reset the voting indication
+          let listOfPlayers = generatePlayersList()
+          listOfPlayers.forEach(function(item,index){
+            let playerVotedSelector = '#player'+item.playerID+'_text'
+            $(playerVotedSelector).css('border-left', '0px')
+          })
+          playerVotedSelector = '#player'+getCookieValue('playerID')+'_text'
+          $(playerVotedSelector).css('border-left', '0px')
+          // clear chancellor ID & locked in cookie
+          deleteCookieValue('locked_in')
           break;
 
         case 'policy_enactment':
@@ -913,6 +948,10 @@
 
           break;
 
+        case 'end_game':
+          console.log('game ended: ' + data.end_game_status)
+          break;
+
 
 
         
@@ -934,7 +973,7 @@
       $('#fakeLoad').on('show.bs.modal', function(e){
         setTimeout(function() {
           $('#fakeLoad').modal('hide')
-        }, 700)
+        }, 1000)
       })
 
       // Chancellor Selection
