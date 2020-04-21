@@ -4,35 +4,9 @@
 
   const MAX_COOKIE_AGE = 4 * 60 * 60 //in seconds
   const LOCAL_DEV = false
-  var WS_IP_ADDRESS = ""
-
-  function get_ip_address(callback){
-    if (LOCAL_DEV) {
-      WS_IP_ADDRESS = 'ws://localhost:5000'
-      callback()
-    } else {
-      console.log('trying to fetch ip address...')
-
-      fetch('http://169.254.169.254/latest/meta-data/public-ipv4',
-      {
-        method: 'GET'
-      }).then(res => {
-        console.log("meta-data response: " + res.text())
-        return res.text()
-      }).then(jsonRes => {
-          console.log("meta-data jsonRes: " + jsonRes)
-          WS_IP_ADDRESS = "ws://" + jsonRes.toString() + ":5000"
-          console.log("websocket IP: " + WS_IP_ADDRESS)
-          callback()
-        }).catch( error => {
-          console.log("Unable to get IP address... default to localhost")
-          WS_IP_ADDRESS = 'ws://192.168.99.100:5000'
-          callback()
-        })
+  var WS_IP_ADDRESS = 'ws://<%=ip_address%>:5000'
 
 
-    }
-  }
 
   function get_image_url(numOfPlayers, isFacistBoard, numOfPoliciesEnacted) {
 
@@ -1383,7 +1357,7 @@
       
       
       reloadGameUponRefresh();
-      get_ip_address(WebSocketEstablish);
+      WebSocketEstablish();
     });
     
 

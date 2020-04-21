@@ -41,7 +41,10 @@ if (!local) {
 	const sns = new aws.SNS({ region: 'us-east-1' }); //Hardcoded value
 
 
-	request({url: 'http://169.254.169.254/latest/meta-data/public-ipv4', method: 'GET'}, function (err, resp, body) {
+	request({
+		url: 'http://169.254.169.254/latest/meta-data/public-ipv4',
+		method: 'GET',
+		timeout: 5000}, function (err, resp, body) {
 		console.log("getting meta-data...")
 		ip_address = 'http://' + body + '/sns'
 		console.log(ip_address)

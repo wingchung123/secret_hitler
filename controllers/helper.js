@@ -110,6 +110,20 @@ exports.validate_game_id = function validate_game_id(req, res, next){
 	})
 }
 
+exports.get_ip_address = function validate_game_id(req, res, next){
+	request({
+		url: 'http://169.254.169.254/latest/meta-data/public-ipv4',
+		method: 'GET',
+		timeout: 1500}, function (err, resp, body) {
+		console.log("getting meta-data...")
+		ip_address =  body
+		console.log(ip_address)
+		res.locals.ip_address = typeof ip_address == 'undefined' ? 'localhost' : ip_address // 192.168.99.100 - local docker
+
+		next()
+	});
+}
+
 
 exports.get_game_details = function get_game_details(req, res, next){
 	console.log("inside helper.get_game_details...")

@@ -40,6 +40,8 @@ Dynamodb Docs: https://boto3.amazonaws.com/v1/documentation/api/latest/reference
 
 `docker system prune`
 
+`docker exec -it <container-name/id> /bin/bash` log into the docker container via bash terminal
+
 
 
 
@@ -63,7 +65,13 @@ Nodemon has been installed for dev. Code changes automatically applied
 
 4. Spin up EC2 for ECS service (via ASG)
 
-5. 
+5. Test via public IPv4 address
+
+6. Debug by logging into the ec2 instance, looking up the docker container info and logging into it
+
+7. You'll need to install vim to edit files (apt-update, apt-get install vim)
+
+8. You need to kill the existing node-server (ps -e|grep node, kill -9 XXX )
 
 
 

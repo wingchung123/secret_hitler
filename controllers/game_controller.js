@@ -90,7 +90,8 @@ exports.game_board_page = function(req, res,next){
 			number_of_facists: data.numberOfFacists,
 			role: data.playerRole, 
 			player_name: data.playerName,
-			amIDead: amIDead
+			amIDead: amIDead,
+			ip_address: res.locals.ip_address
 		})
 	}
 
