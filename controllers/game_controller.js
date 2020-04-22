@@ -80,6 +80,9 @@ exports.game_board_page = function(req, res,next){
 				amIDead = true
 			}
 		});
+		if (data.chancellorID != 'Null'){
+			res.cookie('chancellorID', data.chancellorID, { maxAge: helper.max_cookie_age})
+		}
 		res.render('game/board', { 
 			game_id: req.cookies.gameID,
 			helper : helper,
@@ -109,6 +112,64 @@ exports.game_board_page = function(req, res,next){
 
 
 };
+
+
+exports.join_audience = function(req, res,next){
+	let data = res.locals.data
+	console.log(data)
+
+	// console.log('---------------------------start socket connection---------------------------')
+	// const client = net.createConnection({port: 4000}, function() {
+	// 	console.log('Client: I have connected')
+	// 	client.write('Client: hello this is client')
+	// });
+
+	// client.on('data', function(data){
+	// 	console.log(data.toString());
+	// 	client.end()
+	// })
+
+	// client.on('end', function(){
+	// 	console.log('Client disconnected...')
+	// })
+
+
+	if (res.locals.gameDetailsStatusCode != 200){
+		res.redirect("/error") //also redirects if ejs fails to render i.e. variable names don't match with input args
+	} else if (data.endGame != 'Null') {
+		res.redirect("/game/end_game")
+	} else {
+		let amIDead = false
+		data.executedPlayers.forEach(function(item,index){
+			if (data.playerID == item.playerID){
+				amIDead = true
+			}
+		});
+		res.render('game/board_audience', { 
+			game_id: req.cookies.gameID,
+			helper : helper,
+			number_of_players: data.numberOfPlayers,
+			number_of_liberal_policies_enacted: data.numberOfLiberalPoliciesEnacted,
+			number_of_facist_policies_enacted: data.numberOfFacistPoliciesEnacted,
+			list_of_players: data.players,
+			list_of_executed_players : data.executedPlayers,
+			previousPresidentID : data.previousPresidentID,
+			previousChancellorID : data.previousChancellorID,
+			presidentID : data.presidentID,
+			vetoPower : data.vetoPower,
+			electionTracker : data.electionTracker,
+			policies_in_hand : data.policiesInHand,
+			chancellorID: data.chancellorID,
+			executive_action : data.executiveAction,
+			number_of_liberals: data.numberOfLiberals,
+			number_of_facists: data.numberOfFacists,
+			ip_address: res.locals.ip_address
+		})
+	}
+
+
+};
+
 
 exports.new_player_event = function(req, res, next){
 	// console.log('inside add player functions')

@@ -14,6 +14,8 @@ router.post('/join_game', helper.validate_game_id, game_c.joingame);
 
 router.get('/start_game', helper.get_ip_address, helper.get_game_details, helper.get_player_details, helper.get_facist_players, game_c.game_board_page)
 router.get('/end_game', helper.get_game_details, helper.get_player_roles, game_c.end_game_page)
+router.get('/join_audience', helper.get_game_details, game_c.join_audience)
+
 
 
 router.post('/new_player_event', game_c.new_player_event)

@@ -1,0 +1,61 @@
+<% include ../partial/header %>
+<% include executive_action_modal %>
+<% include fakeLoad %>
+
+	<body>
+		<!-- Body -->
+		<div class="container-fluid my-3">
+			<div class="row">
+				<div class="col-sm-8">
+					
+					<div class="container my-0 text-align" >
+						<img id="facist_board" src="<%=helper.get_image_url(number_of_players,true,Number(number_of_facist_policies_enacted))%>" width="100%", height="100%">
+					</div>
+					<div class="container my-0 mt-0 text-center">
+						<img id="election_tracker" src="/images/tracker/election_tracker_<%=electionTracker%>.png" width="50%", height="50%">
+					</div>
+					<div class="container my-0 mt-0 text-align">
+						<img id="liberal_board" src="<%=helper.get_image_url(number_of_players,false,Number(number_of_liberal_policies_enacted))%>" width="100%", height="100%">
+					</div>
+				</div>
+				<div class="col-sm-4 mt-4 pl-0">
+
+					<div class="container mb-3">
+						<div class="accordion" id="playerAccordion">
+							  <div class="card">
+							    <div class="card-header py-1 px-1" id="playerHeading">
+							      <h3 class="my-0">
+							        <button class="btn btn-block" type="button" data-toggle="collapse" data-target="#players" aria-expanded="true" aria-controls="players">
+							          Players
+							        </button>
+							      </h3>
+							    </div>
+							    <div id="players" class="collapse show" aria-labelledby="playerHeading" data-parent="#playerAccordion">
+							      <div class="card-body" id="snsAddPlayerHere">
+							      	<% for (var i=0; i < list_of_players.length; i++) { %>
+										<div class="card my-2 text-center">
+											<div class="card-body py-1 rounded" id="player<%=list_of_players[i].playerID%>_text">
+												<%= list_of_players[i].playerName %>
+												<span id="previousPresident_<%=list_of_players[i].playerID%>" class="badge badge-danger badge-pill ml-2 d-none previousPresident" data-toggle="tooltip" data-placement="top" title="President Last Election">P</span>
+												<span id="previousChancellor_<%=list_of_players[i].playerID%>" class="badge badge-danger badge-pill ml-2 d-none previousChancellor" data-toggle="tooltip" data-placement="top" title="Chancellor Last Election">C</span>
+												<span id="presidentElect_<%=list_of_players[i].playerID%>" class="badge badge-primary badge-pill ml-2 d-none presidentElect" data-toggle="tooltip" data-placement="top" title="President Elect">P</span>
+												<span id="chancellorElect_<%=list_of_players[i].playerID%>" class="badge badge-primary badge-pill ml-2 d-none chancellorElect" data-toggle="tooltip" data-placement="top" title="Chancellor Elect">C</span>
+											</div>
+										</div>
+									<% } %>
+							      </div>
+							    </div>
+				
+							  </div>
+						</div>
+					</div>
+				</div>
+
+				</div>
+
+			</div>
+		</div>
+	</body>
+
+	<% include websocket %>
+</html> 
