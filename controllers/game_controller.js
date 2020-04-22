@@ -38,11 +38,14 @@ exports.joingame_page = function(req, res, next) {
 exports.end_game_page = function(req, res, next) {
 	let data = res.locals.data
 	// request(api_options, callback)
+
 	res.render('game/endGame', {
 		game_id : req.cookies.gameID,
 		liberalPlayers : data.liberalPlayers,
 		facistPlayers : data.facistPlayers,
-		hitler : data.hitler
+		hitler : data.hitler,
+		gameStatus : data.endGame,
+		players : data.players
 	});
 };
 
@@ -68,6 +71,8 @@ exports.game_board_page = function(req, res,next){
 
 	if (res.locals.gameDetailsStatusCode != 200){
 		res.redirect("/error") //also redirects if ejs fails to render i.e. variable names don't match with input args
+	} else if (data.endGame != 'Null') {
+		res.redirect("/game/end_game")
 	} else {
 		let amIDead = false
 		data.executedPlayers.forEach(function(item,index){

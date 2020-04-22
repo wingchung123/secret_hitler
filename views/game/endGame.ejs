@@ -4,16 +4,63 @@
 	<body>
 		
 		<div class="container-fluid text-center" style="background-color: #ff6650;">
-			<img src="/images/logo1.png" width="500vw" height="300vh" alt="">
+			<img src="/images/logo2.png" width="42%" height="100%" alt="">
 		</div>
 
 		<div class="container text-center">
 			
-			<div class= "my-3" id=""><%= hitler%></div>
-			<div class= "my-3" id=""><%= liberalPlayers%></div>
+			<% if (gameStatus == 'F1' || gameStatus == 'F2'){ %>
+			<div class="container text-center alert alert-danger mb-0 mt-3 pt-1 pb-0 ">
+				<h4><small><span class="text-danger">Facists Win!</span></small></h4>
+			</div>
+			<% } else if (gameStatus == 'L1' || gameStatus == 'L2'){  %>
+			<div class="container text-center alert alert-primary mb-0 mt-3 pt-1 pb-0 ">
+				<h4><small><span class="text-primary">Liberals Win!</span></small></h4>
+			</div>
+			<% } %>
+			
+			<% if (gameStatus != 'Null') { %>
+			<div class="container my-3">
+				<div class="row">
+					<div class="col"></div>
 
-			<div class= "my-3" id=""><%= facistPlayers%></div>
+				 	<% liberalPlayers.forEach(function(item,index){ %>
+					 	<div class= "col-sm mx-3">
+							<figure>
+						        <img src="/images/liberal.png" width="100%" height="" alt="">
+						        <figcaption><span class="text-primary"><%= item.playerName%></span></figcaption>
+						     </figure>
+					 	</div>
+				 	<% }) %>
 
+
+					<div class="col"></div>
+				</div>
+				<div class="row">
+					<div class="col"></div>
+
+					<div class= "col-sm mx-3">
+						<figure>
+					        <img src="/images/hitler.png" width="100%" height="" alt="">
+					        <figcaption><span class="text-danger"><%= hitler.playerName%></span></figcaption>
+					     </figure>
+				 	</div>
+				 	<% facistPlayers.forEach(function(item,index){ %>
+					 	<div class= "col-sm mx-3">
+							<figure>
+						        <img src="/images/facist.png" width="100%" height="" alt="">
+						        <figcaption><span class="text-danger"><%= item.playerName%></span></figcaption>
+						     </figure>
+					 	</div>
+				 	<% }) %>
+
+					<div class="col"></div>
+				</div>
+
+			</div>
+			<% } %>
+
+			
 		</div>
 	</body>
 </html> 
