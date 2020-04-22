@@ -424,8 +424,8 @@
 
     } else if (policiesInHand != 'Null' ) {
         console.log("vote has passed... waiting on policy discard/enactment")
-        $('#voteYes').prop("disabled",true)
-        $('#voteNo').prop("disabled",true)
+        // $('#voteYes').prop("disabled",true)
+        // $('#voteNo').prop("disabled",true)
         $('#vetoPower').addClass('d-none')
         $('#vetoPower').prop('disabled', true)
 
@@ -458,15 +458,15 @@
       // deleteCookieValue('locked_in')
       // chancellor is locked in, enable voting buttons
       // make sure chancellorID is not null
-        $('#voteYes').prop("disabled",false)
-        $('#voteNo').prop("disabled",false)
+        // $('#voteYes').prop("disabled",false)
+        // $('#voteNo').prop("disabled",false)
 
     } else {
       // default state; similar to after next_turn SNS
       // time to select a chancellor and lock it in
       console.log("chancellor section time")
-      $('#voteYes').prop("disabled",true)
-      $('#voteNo').prop("disabled",true)
+      // $('#voteYes').prop("disabled",true)
+      // $('#voteNo').prop("disabled",true)
       if (amIPresident() ){
 
         $('#presidentModal').modal('show')
@@ -619,8 +619,8 @@
         case 'locked_in':
           // enable voting button
           console.log('within locked_in function')
-          $('#voteYes').prop("disabled",false)
-          $('#voteNo').prop("disabled",false)
+          // $('#voteYes').prop("disabled",false)
+          // $('#voteNo').prop("disabled",false)
 
           setCookieValue('locked_in' , 'true')
 
@@ -857,8 +857,8 @@
           // Hide Chancellor Selection, deselect & disable voting
           $('#chancellorSelectionAccordion').addClass('d-none')
           $("#selectChancellor option:selected").prop("selected", false)
-          $('#voteYes').prop("disabled",true)
-          $('#voteNo').prop("disabled",true)
+          // $('#voteYes').prop("disabled",true)
+          // $('#voteNo').prop("disabled",true)
           // if it's similar to next turn message, just call snsParse with new data
           if ( ("electionTracker" in data) ) {
             // need to update election tracker and the boards
@@ -1124,8 +1124,8 @@
         sendWSMessage(wsPayload)
 
         // Enable voting
-        $('#voteYes').prop("disabled",false)
-        $('#voteNo').prop("disabled",false)
+        // $('#voteYes').prop("disabled",false)
+        // $('#voteNo').prop("disabled",false)
 
         // Disable nomination
         $('#selectChancellor').prop("disabled",true)
