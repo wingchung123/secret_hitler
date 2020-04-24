@@ -3,14 +3,14 @@ var request = require('request')
 const api_url = 'https://f6rfiijh83.execute-api.us-east-1.amazonaws.com/dev'
 const api_key = {'x-api-key': 'lNB8qsKchF6sNPfucZDKy7z9kLeMfeOoaXch6MxY'}
 const max_cookie_age = 3600000 * 4
-const list_of_cookies = ['numberOfPlayers', 'role', 'presidentID',
- 'previousChancellorID', 'previousPresidentID',
+const list_of_cookies = ['numberOfPlayers', 'presidentID', 'chancellorID',
+ 'previousChancellorID', 'previousPresidentID', 'policiesInHand', 'executiveAction', 'executiveActionResult',
  'numberOfFacistPoliciesEnacted', 'numberOfLiberalPoliciesEnacted',
  'numberOfLiberalPolicies', 'numberOfFacistPolicies', 'vetoPower', 'fpids', 'hpid'] //also all the playerIDs // exclued chancellorID
 
-const list_of_player_cookies = ['playerID', 'playerName']
+const list_of_player_cookies = ['playerID', 'playerName', 'role']
 
-const list_of_game_created_cookies = ['chancellorID', 'locked_in', 'policiesInHand', 'executiveAction']
+// const list_of_game_created_cookies = ['chancellorID', 'locked_in', 'policiesInHand', 'executiveAction']
 
 exports.api_url = api_url
 exports.api_key = api_key
@@ -80,6 +80,7 @@ exports.delete_game_state_cookies = function delete_game_state_cookies(req, res)
 	let numberOfPlayers = req.cookies.numberOfPlayers
 	for (let i = 1; i <= numberOfPlayers; i++){
 		res.clearCookie(i)
+		res.clearCookie('ghost'+i)
 	}
 
 	list_of_cookies.forEach(function(item,index){
@@ -87,12 +88,12 @@ exports.delete_game_state_cookies = function delete_game_state_cookies(req, res)
 	})
 }
 
-exports.delete_game_created_cookies = function delete_game_created_cookies(req, res){
+// exports.delete_game_created_cookies = function delete_game_created_cookies(req, res){
 
-	list_of_game_created_cookies.forEach(function(item,index){
-		res.clearCookie(item)
-	})
-}
+// 	list_of_game_created_cookies.forEach(function(item,index){
+// 		res.clearCookie(item)
+// 	})
+// }
 
 exports.validate_game_id = function validate_game_id(req, res, next){
 	const api_options = {
@@ -140,7 +141,13 @@ exports.get_game_details = function get_game_details(req, res, next){
 		console.log(api_resp)
 		if(api_resp.statusCode == 200){
 			// these values will not be ready until AFTER the page renders
+			// clear player cookies before resetting
+			for(var i = 1; i <= api_resp.data.numberOfPlayers; i++){
+				res.clearCookie(i)
+			}
 			exports.delete_game_state_cookies(req,res)
+
+
 			res.cookie('numberOfPlayers', api_resp.data.numberOfPlayers, { maxAge: max_cookie_age})
 			// res.cookie('numberOfFacistPolicies', api_resp.data.numberOfFacistPolicies, { maxAge: max_cookie_age})
 			// res.cookie('numberOfLiberalPolicies', api_resp.data.numberOfLiberalPolicies, { maxAge: max_cookie_age})
@@ -156,17 +163,26 @@ exports.get_game_details = function get_game_details(req, res, next){
 			res.cookie('chancellorID', api_resp.data.currentChancellorID, { maxAge: max_cookie_age})
 			res.cookie('executiveAction', api_resp.data.executiveAction, { maxAge: max_cookie_age})
 			if (api_resp.data.policiesInHand.length > 0) {
-				res.cookie('policiesInHand', api_resp.data.policiesInHand.length, { maxAge: max_cookie_age})
+
+				if ( (api_resp.data.currentPresidentID.toString() == req.cookies.playerID.toString() && api_resp.data.policiesInHand.length == 3) ||
+						(api_resp.data.currentChancellorID.toString() == req.cookies.playerID.toString() && api_resp.data.policiesInHand.length == 2) ){
+					console.log('President or chancellors turn to discard policies')
+					res.cookie('policiesInHand', api_resp.data.policiesInHand.toString().replace(/,/g,'p'), { maxAge: max_cookie_age})
+				} else {
+					res.cookie('policiesInHand', api_resp.data.policiesInHand.length, { maxAge: max_cookie_age})
+				}
 			} else {
+				console.log('policies null')
 				res.cookie('policiesInHand', 'Null', { maxAge: max_cookie_age})
 			}
-			// clear player cookies before resetting
-			for(var i = 1; i <= api_resp.data.numberOfPlayers; i++){
-				res.clearCookie(i)
-			}
+
 
 			api_resp.data.players.forEach(function(item, index){
 				res.cookie(item.playerID, item.playerName, { maxAge: max_cookie_age})
+			})
+
+			api_resp.data.executedPlayers.forEach(function(item,index){
+				res.cookie('ghost'+item.playerID, item.playerName, { maxAge: max_cookie_age})
 			})
 		} else {
 			res.locals.message = api_resp.message

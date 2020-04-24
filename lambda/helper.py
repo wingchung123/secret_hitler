@@ -123,11 +123,17 @@ def create_test_game(numberOfPlayers=5, gameID="default_test", numberOfLiberalPo
     numberOfFacistPoliciesEnacted=0, turn=0, players=[], currentPresidentID="Null", currentChancellorID="Null",
     previousPresidentID="Null", previousChancellorID="Null", electionTracker=0, vetoPower=False, 
     policiesInHand=[], deck=[], discard=[],
-    executedPlayers=[], executiveAction="Null", endGameStatus="Null"):
+    executedPlayers=[], executiveAction="Null", endGameStatus="Null",
+    specialElectionPresidentPlaceholder="Null",executiveActionResult="Null"):
 
     if deck == []:
         deck = ['L','L','L','L','L','L','F','F','F','F','F','F','F','F','F','F','F']
         random.shuffle(deck)
+
+    if players != []:
+        for player in players:
+            player['playerID'] = int(player['playerID'])
+
 
     (roles, numberOfLiberals, numberOfFacists) = role_array(numberOfPlayers)
     Item={
@@ -152,7 +158,9 @@ def create_test_game(numberOfPlayers=5, gameID="default_test", numberOfLiberalPo
         'discard': discard,
         'executedPlayers' : executedPlayers,
         'executiveAction' : executiveAction,
-        'endGameStatus' : endGameStatus
+        'endGameStatus' : endGameStatus,
+        'specialElectionPresidentPlaceholder' : specialElectionPresidentPlaceholder,
+        'executiveActionResult' : executiveActionResult
     }
 
     return Item

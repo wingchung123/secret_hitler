@@ -9,6 +9,7 @@ from aws_credentials import awsAccessKey, awsSecretKey, awsRegion
 
 from voting_sns import *
 
+# NOTE: relies on Next Turn lambda; Make sure to change the function in AWS prior to running test
 
 dynamodb = boto3.resource('dynamodb',  aws_access_key_id=awsAccessKey, aws_secret_access_key=awsSecretKey, region_name=awsRegion)
 TEST_CASES_EXISTS_IN_TABLE = False # has to write to database each time otherwise tests fails
@@ -345,7 +346,12 @@ def test_vote_passes_chancellor_is_hitler():
 		"president_id": '1',
 		"chancellor_id": '2'
 	}
-	assert lambda_function(event) == 'Hitler'
+
+	snsData = lambda_function(event)
+	currentGame = get_game_info(gameID)
+
+	assert snsData['end_game_status'] == 'F2'
+	assert currentGame['endGameStatus'] == 'F2'
 
 def test_vote_fails_new_president_to_elect():
 
@@ -408,15 +414,7 @@ def test_vote_fails_new_president_to_elect():
 
 	assert currentGame['currentPresidentID'] == '4'
 	assert currentGame['electionTracker'] == 1
-
-
-	assert snsData['presidentID'] == currentGame['currentPresidentID']
-	assert snsData['previousPresidentID'] == currentGame['previousPresidentID']
-	assert snsData['previousChancellorID'] == currentGame['previousChancellorID']
-	assert snsData['electionTracker'] == currentGame['electionTracker']
-	assert snsData['listOfPlayers'] == currentGame['players']
-	assert snsData['gameID'] == gameID
-
+	assert currentGame['currentChancellorID'] == 'Null'
 
 
 
@@ -486,14 +484,9 @@ def test_vote_fails_election_tracker_3_top_card_liberal():
 	assert currentGame['deck'] == ['F','F','L','F']
 	assert currentGame['previousPresidentID'] == "Null"
 	assert currentGame['previousChancellorID'] == "Null"
+	assert currentGame['currentChancellorID'] == 'Null'
 
 
-	assert snsData['presidentID'] == currentGame['currentPresidentID']
-	assert snsData['previousPresidentID'] == currentGame['previousPresidentID']
-	assert snsData['previousChancellorID'] == currentGame['previousChancellorID']
-	assert snsData['electionTracker'] == currentGame['electionTracker']
-	assert snsData['listOfPlayers'] == currentGame['players']
-	assert snsData['gameID'] == gameID
 
 
 def test_vote_fails_election_tracker_3_top_card_facist():
@@ -562,14 +555,8 @@ def test_vote_fails_election_tracker_3_top_card_facist():
 	assert currentGame['deck'] == ['L','L','L','L']
 	assert currentGame['previousPresidentID'] == "Null"
 	assert currentGame['previousChancellorID'] == "Null"
+	assert currentGame['currentChancellorID'] == 'Null'
 
-
-	assert snsData['presidentID'] == currentGame['currentPresidentID']
-	assert snsData['previousPresidentID'] == currentGame['previousPresidentID']
-	assert snsData['previousChancellorID'] == currentGame['previousChancellorID']
-	assert snsData['electionTracker'] == currentGame['electionTracker']
-	assert snsData['listOfPlayers'] == currentGame['players']
-	assert snsData['gameID'] == gameID
 
 
 def test_vote_fails_at_3_top_policy_enables_veto_power():
@@ -639,15 +626,7 @@ def test_vote_fails_at_3_top_policy_enables_veto_power():
 	assert currentGame['vetoPower'] == True
 	assert currentGame['previousPresidentID'] == "Null"
 	assert currentGame['previousChancellorID'] == "Null"
-
-
-	assert snsData['presidentID'] == currentGame['currentPresidentID']
-	assert snsData['previousPresidentID'] == currentGame['previousPresidentID']
-	assert snsData['previousChancellorID'] == currentGame['previousChancellorID']
-	assert snsData['electionTracker'] == currentGame['electionTracker']
-	assert snsData['listOfPlayers'] == currentGame['players']
-	assert snsData['gameID'] == gameID
-
+	assert currentGame['currentChancellorID'] == 'Null'
 
 
 

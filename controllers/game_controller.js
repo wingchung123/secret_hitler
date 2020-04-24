@@ -18,7 +18,6 @@ exports.joingame = function(req, res, next) {
 			res.cookie('gameID', req.body.gameCode, { maxAge: helper.max_cookie_age})
 			// joining new game so delete all previous game state cookies
 			helper.delete_player_cookies(req, res)
-			helper.delete_game_created_cookies(req,res)
 			res.redirect('/createPlayer')
 		}
 

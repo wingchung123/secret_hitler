@@ -9,11 +9,13 @@ var request = require('request')
 // var WebSocketClient = require('websocket').client;
 // var client = new WebSocketClient();
 
-const WebSocket = require('ws')
+// const WebSocket = require('ws')
+const io = require('socket.io-client');
 
 
 router.post('/', function(req, res, next) {
-	const ws = new WebSocket('ws://localhost:5000')
+	// const ws = new WebSocket('ws://localhost:5000')
+	console.log('within sns function...')
 
 //console.log(req.headers);
 	headerJson = JSON.parse( JSON.stringify(req.headers) )
@@ -34,17 +36,23 @@ router.post('/', function(req, res, next) {
 		wsPayload.message = JSON.parse(bodyJson.Message)
 		wsPayload.origin = 'sns'
 
+		const ws = io('http://localhost:3000')
+		console.log('websocket created...')
+		console.log(ws)
 
-		ws.on('open', function open(){
-			console.log("socket is open")
-			ws.send(JSON.stringify(wsPayload))
+		ws.on('connect', function(socket){
+			console.log("socket is connected...")
+			// ws.send(JSON.stringify(wsPayload))
+			ws.emit('sns update', wsPayload)
 			ws.close()
 
 		})
-		ws.on('error', function error(error){
+		ws.on('disconnect', function(error){
 			console.log(error)
 			
 		})
+
+
 
 		// // create websocket client
 		// client.on('connect', function(connection) {

@@ -34,14 +34,14 @@ def lambda_function(event, context=None):
 		raise Exception('Error: Missing one or more parameters [99]')
 
 	currentGame = get_game_info(currentGameID)
-	gameTable = dynamodb.Table('secret-hitler-test')
-	playerTable = dynamodb.Table('secret-hitler-players-test')
+	gameTable = dynamodb.Table('secret-hitler-test') # MARKER FOR LAMBDA DEPLOYMENT
+	playerTable = dynamodb.Table('secret-hitler-players-test') # MARKER FOR LAMBDA DEPLOYMENT
 	returnValue = ""
 
 
 	if executiveAction == 'policy_peek':
 
-		returnValue = currentGame['deck'][0:3]
+		currentGame['executiveActionResult'] = str(currentGame['deck'][0:3])
 
 	elif executiveAction == 'investigate_loyalty':
 
@@ -52,9 +52,9 @@ def lambda_function(event, context=None):
 
 		player = get_player_info(currentGameID, playerID)
 		if player['role'] == 'L':
-			returnValue = 'Liberal'
+			currentGame['executiveActionResult'] = 'Liberal'
 		else:
-			returnValue = 'Facist'
+			currentGame['executiveActionResult'] = 'Facist'
 
 	elif executiveAction == 'special_election':
 		raise Exception('Error: Special Election should not be handled by this function')
@@ -63,21 +63,34 @@ def lambda_function(event, context=None):
 		try:
 			playerID = str(event['player_id'])
 		except:
-			raise Exception('Error: Player ID required for Investigation [500]')
+			raise Exception('Error: Player ID required for Execution [500]')
 
 
 		player = get_player_info(currentGameID, playerID)
 
 		if player['role'] == 'H':
-			return "Liberals Win; Hitler is killed."
-			event = {'end_game_status' : 'L2'}
 
-			response = lambdaClient.invoke(
-				FunctionName='secret-hitler-end-game',
-				InvocationType='Event',
-				LogType='None',
-				Payload=json.dumps(event));
+			currentGame['endGameStatus'] = 'L2'
+			resp = gameTable.update_item(
+			    Key={"game": currentGameID},
+			    UpdateExpression="set endGameStatus = :endGame",
+			    ExpressionAttributeValues={
+			        ':endGame' : currentGame['endGameStatus']
+			})
 
+
+			event = {'end_game_status' : currentGame['endGameStatus'], 'game_id' : currentGameID}
+
+			# MARKER FOR LAMBDA DEPLOYMENT
+			# response = lambdaClient.invoke(
+			# 	FunctionName='secret-hitler-end-game',
+			# 	InvocationType='Event',
+			# 	LogType='None',
+			# 	Payload=json.dumps(event));
+				
+			currentGame['executiveActionResult'] = 'Hitler'
+		else:
+			currentGame['executiveActionResult'] = 'not Hitler'
 		player['isAlive'] = False
 
 		index = None
@@ -104,6 +117,17 @@ def lambda_function(event, context=None):
 		        ExpressionAttributeValues={
 		            ':alive' : player['isAlive']
 		})
+	
+	currentGame['executiveAction'] = 'Null'
 
-	return returnValue
+
+	resp = gameTable.update_item(
+	    Key={"game": currentGameID},
+	    UpdateExpression="set executiveAction = :ea, executiveActionResult = :ear",
+	    ExpressionAttributeValues={
+	        ':ea' : currentGame['executiveAction'],
+	        ':ear' : currentGame['executiveActionResult']
+	})
+
+	return currentGame['executiveActionResult']
 

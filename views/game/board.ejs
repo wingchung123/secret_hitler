@@ -15,13 +15,27 @@
 				<div class="col-sm-8">
 					
 					<div class="container my-0 text-align" >
-						<img id="facist_board" src="<%=helper.get_image_url(number_of_players,true,Number(number_of_facist_policies_enacted))%>" width="100%", height="100%">
+						<img class="board d-none" id="facist_board_0" src="<%=helper.get_image_url(number_of_players,true,0)%>" width="100%", height="100%">
+						<img class="board d-none" id="facist_board_1" src="<%=helper.get_image_url(number_of_players,true,1)%>" width="100%", height="100%">
+						<img class="board d-none" id="facist_board_2" src="<%=helper.get_image_url(number_of_players,true,2)%>" width="100%", height="100%">
+						<img class="board d-none" id="facist_board_3" src="<%=helper.get_image_url(number_of_players,true,3)%>" width="100%", height="100%">
+						<img class="board d-none" id="facist_board_4" src="<%=helper.get_image_url(number_of_players,true,4)%>" width="100%", height="100%">
+						<img class="board d-none" id="facist_board_5" src="<%=helper.get_image_url(number_of_players,true,5)%>" width="100%", height="100%">
+						<img class="board d-none" id="facist_board_6" src="<%=helper.get_image_url(number_of_players,true,6)%>" width="100%", height="100%">
 					</div>
 					<div class="container my-0 mt-0 text-center">
-						<img id="election_tracker" src="/images/tracker/election_tracker_<%=electionTracker%>.png" width="50%", height="50%">
+						<img class="board d-none" id="election_tracker_0" src="/images/tracker/election_tracker_0.png" width="50%", height="50%">
+						<img class="board d-none" id="election_tracker_1" src="/images/tracker/election_tracker_1.png" width="50%", height="50%">
+						<img class="board d-none" id="election_tracker_2" src="/images/tracker/election_tracker_2.png" width="50%", height="50%">
+
 					</div>
 					<div class="container my-0 mt-0 text-align">
-						<img id="liberal_board" src="<%=helper.get_image_url(number_of_players,false,Number(number_of_liberal_policies_enacted))%>" width="100%", height="100%">
+						<img class="board d-none" id="liberal_board_0" src="/images/boards/liberal/liberal_board.png" width="100%", height="100%">
+						<img class="board d-none" id="liberal_board_1" src="/images/boards/liberal/liberal_board_1.png" width="100%", height="100%">
+						<img class="board d-none" id="liberal_board_2" src="/images/boards/liberal/liberal_board_2.png" width="100%", height="100%">
+						<img class="board d-none" id="liberal_board_3" src="/images/boards/liberal/liberal_board_3.png" width="100%", height="100%">
+						<img class="board d-none" id="liberal_board_4" src="/images/boards/liberal/liberal_board_4.png" width="100%", height="100%">
+						<img class="board d-none" id="liberal_board_5" src="/images/boards/liberal/liberal_board_5.png" width="100%", height="100%">
 					</div>
 				</div>
 				<div class="col-sm-4 mt-4 pl-0">
@@ -175,11 +189,11 @@
 							  </div>
 						</div>
 					</div>
-					<% if (amIDead) {%> 
+				<!-- 	<% if (amIDead) {%> 
 					<div id="votingContainer" class="container mb-3 d-none">
-					<% } else { %>
+					<% } else { %> -->
 					<div id="votingContainer" class="container mb-3">
-					<% } %>
+					<!-- <% } %> -->
 						<div class="accordion" id="actionAccordion">
 							  <div class="card">
 							    <div class="card-header py-1 px-1" id="actionHeading">
@@ -192,13 +206,14 @@
 
 							    <div id="actions" class="collapse show" aria-labelledby="actionHeading" data-parent="#actionAccordion">
 							      <div class="card-body">
-							      	<% if (chancellorID == 'Null') { %>
 							      		<button id="voteYes" class="btn btn-block btn-outline-secondary" type="button">Ja!</button>
 							      		<button id="voteNo" class="btn btn-block btn-dark" type="button">Nein!</button>
-							      	<% } else { %> 
+							   <!--    	<% if (chancellorID == 'Null') { %>
 							      		<button id="voteYes" class="btn btn-block btn-outline-secondary" type="button">Ja!</button>
 							      		<button id="voteNo" class="btn btn-block btn-dark" type="button">Nein!</button>
-							      	<% } %> 
+							      	<% } else { %>  -->
+							      		
+							      	<!-- <% } %>  -->
 							      	
 							      </div>
 							    </div>
@@ -222,11 +237,11 @@
 									    <label for="selectChancellor">Select your chancellor:</label>
 									    <select class="form-control" id="selectChancellor">
 									    	<option></option>
-									    	<% for (var i=0; i < list_of_players.length; i++) { %>
+									    	<!-- <% for (var i=0; i < list_of_players.length; i++) { %>
 									    		<% if (list_of_players[i].playerID != presidentID && list_of_players[i].playerID != previousChancellorID && (list_of_players[i].playerID != previousPresidentID || number_of_players == 5) ) { %>
 									    		<option value="<%= list_of_players[i].playerID%>"><%= list_of_players[i].playerName%></option>
 									    		<% } %>
-											<% } %>
+											<% } %> -->
 									    </select>
 									  </div>
   									  <!-- <button id="selectChancellorSubmit" class="btn btn-block btn-outline-primary" type="button" disabled>Nominate</button> -->
@@ -254,7 +269,7 @@
 									    <label for="policySelection">Discard one of the following:</label>
 									    <div class="row" id="policies">
 
-									    	<% for (var i=0; i < policies_in_hand.length; i++) { %>
+<!-- 									    	<% for (var i=0; i < policies_in_hand.length; i++) { %>
 
 									    		<% if (policies_in_hand[i] == 'F') { %>
 									    			<div class="col-sm-4">
@@ -266,16 +281,16 @@
 											    	</div>
 									    		<% } %>
 
-									    	<% } %>
+									    	<% } %> -->
 									    </div>
 									    <div class="row text-center" id="policiesRadio">
-									    	<% for (var i=0; i < policies_in_hand.length; i++) { %>
+<!-- 									    	<% for (var i=0; i < policies_in_hand.length; i++) { %>
 
 									    		<label class="radio-inline col-sm-4">
 									    			<input value="<%=policies_in_hand[i]%>" id="radio_<%=i+1%>" type="radio" name="policyRadio">
 									    		</label>
 
-									    	<% } %>
+									    	<% } %> -->
 									    </div>
 									  </div>
   									  <!-- <button id="selectChancellorSubmit" class="btn btn-block btn-outline-primary" type="button" disabled>Nominate</button> -->

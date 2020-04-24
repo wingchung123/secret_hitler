@@ -135,3 +135,112 @@ Nodemon has been installed for dev. Code changes automatically applied
 | previousChancellorID | websocket.snsParseEvent | previous chancellor ID | sns notification
 
 
+
+
+## Game States
+
+Next Turn -> Lock In Chancellor
+
+Lock In Chancellor -> Voting (Fails; Election tracker + 1)
+
+Lock In Chancellor -> Voting (Fails; Election tracker = 0; Enact top policy)
+
+Lock In Chancellor -> Voting (Pass)
+
+Voting (Fails; Election tracker + 1) -> Next Turn
+
+Voting (Fails; Election tracker = 0; Enact top policy) -> Next Turn
+
+Voting (Fails; Election tracker = 0; Enact top policy) -> End Game
+
+Voting (Pass) -> End Game
+
+Voting (Pass) -> President Discard
+
+President Discard -> Policy Enactment
+
+Policy Enactment -> Next Turn
+
+Policy Enactment -> Executive Action
+
+Executive Action -> End Game
+
+Executive Action -> Next Turn
+
+
+
+
+- Next Turn:
+	DB State:
+	1. Chancellor ID = Null
+	2. Executive Action = Null OR Special Election
+	3. President ID = new president id OR special election president id
+	4. special election presdient placeholder = placeholder ID or null
+	5. Previous president ID
+	6. Previous chancellor ID
+	7. Number of Facist/Liberal policies
+	8. Veto Power
+	9. Executive Action Result = Null
+
+	Web State:
+	1. Pop up for president to select chancellor
+	2. Enable & show (or disable & hide) chancellor selection
+	3. no executive action display (except for special election)
+	4. Disable voting/hide voting if executed
+	5. Update election tracker
+	6. update game boards
+	7. enable veto power
+
+
+- Lock In Chancellor:
+	1. Chancellor ID != Null
+
+	1. Disable chancellor selection
+	2. Enable voting
+
+
+- Voting (processing votes):
+	1. Policies in hand = deck[0:3]
+	2. Deck.length >= 3
+	3. Election tracker
+	4. Votes != 'Null'::before
+
+	1. Embed/Delete Policies
+	2. Show/Hide policy accordion
+	3. Disable voting
+
+
+	OR
+
+	1. Next turn lambda execution
+
+	1. Disable voting
+
+
+- President Discard
+	1. Votes == Null
+	2. Policies in hand.length == 2
+	3. Discard + 1
+
+	1. Pass cards on to Chancellor
+
+- Chancellor Discard/policy enactment
+	1. Deck.length >= 3 (shuffle)
+	2. Discard + 1
+	3. Number of liberal policies/facist policies + 1
+	4. Veto Power
+	5. Policies in Hand = []
+
+
+- Executive Action
+	1. Executive Action = Null
+	2. Executive Action Result != Null
+
+
+Web Reload States:
+- If Chancellor ID is null, election time?
+- If executive action is not null, then executive action?
+- What happens if you submit executive action -> game['executiveAction'] is now null -> on client, instead of clicking okay you refresh the page?
+
+
+

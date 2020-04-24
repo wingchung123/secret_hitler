@@ -13,6 +13,9 @@ from helper import *
 
 
 dynamodb = boto3.resource('dynamodb',  aws_access_key_id=awsAccessKey, aws_secret_access_key=awsSecretKey, region_name=awsRegion)
+lambdaClient = boto3.client('lambda',  aws_access_key_id=awsAccessKey, aws_secret_access_key=awsSecretKey, region_name=awsRegion)
+
+
 
 
 def does_vote_pass(listOfVotes):
@@ -52,6 +55,7 @@ def remove_previous_votes(table, gameID):
 
 
 
+
 # Given the prez & chancellor ID, determine if vote passes
 # @inputs
 # 	gameID
@@ -68,6 +72,7 @@ def remove_previous_votes(table, gameID):
 #		- Previous Chancellor ID 
 # 		- Election Tracter  (int)
 #		- List of players 
+#	   - list of executed players
 # 	SNS readable data object case 3 (vote fails, electionTracker = 3)
 # 	Envoke End Game Lambda
 # @updates
@@ -77,11 +82,14 @@ def remove_previous_votes(table, gameID):
 #		passes & remove top 3 policies & update previous in office
 
 def lambda_function(event, context=None):
-	currentGameID = str(event['game_id'])
-	chancellorID = str(event['chancellor_id'])
-	playerTableName = 'secret-hitler-players-test'
+	try:
+		currentGameID = str(event['game_id'])
+		chancellorID = str(event['chancellor_id'])
+	except:
+		raise Exception('Error: Missing one or more parameters [99]')
+	playerTableName = 'secret-hitler-players-test' # MARKER CHANGE FOR LAMBDA DEPLOY
 	playerTable = dynamodb.Table(playerTableName)
-	gameTable = dynamodb.Table('secret-hitler-test')
+	gameTable = dynamodb.Table('secret-hitler-test') # MARKER CHANGE FOR LAMBDA DEPLOY
 
 	currentGame = get_game_info(currentGameID)
 	returnValue = {}
@@ -89,6 +97,7 @@ def lambda_function(event, context=None):
 	# Collec Votes
 	resp = playerTable.query(
 		KeyConditionExpression=Key('gameID').eq(currentGameID),
+		FilterExpression=Attr('isAlive').not_exists(),
 		ProjectionExpression="vote"
 	);
 	votes = resp["Items"]
@@ -96,18 +105,44 @@ def lambda_function(event, context=None):
 		resp = playerTable.query(
 			ProjectionExpression="vote",
 			KeyConditionExpression=Key('gameID').eq(currentGameID),
+			FilterExpression=Attr('isAlive').not_exists(),
 			Limit=10,
 			ExclusiveStartKey=resp['LastEvaluatedKey'])
 		votes.extend(resp['Items'])
 
 	print("votes received")
-
+	print(votes)
+	
 	if does_vote_pass(votes):
 		print('vote passes')
 		# check to see if chancellor is hitler
 		chancellor = get_player_info(currentGameID, chancellorID)
 		if (chancellor['role'] == 'H' and int(currentGame['numberOfFacistPoliciesEnacted']) >= 3): 
-			return 'Hitler'
+			
+			currentGame['endGameStatus'] = 'F2'
+			resp = gameTable.update_item(
+				Key={"game": currentGameID},
+				UpdateExpression="set endGameStatus = :endGame",
+				ExpressionAttributeValues={
+					':endGame' : currentGame['endGameStatus']
+			})
+
+
+			publishEvent = {
+				'end_game_status' : currentGame['endGameStatus'],
+				'game_id' : currentGameID
+			}
+			
+			# MARKER CHANGE FOR LAMBDA DEPLOY
+			# response = lambdaClient.invoke(
+			# 	FunctionName='secret-hitler-end-game',
+			# 	InvocationType='Event', # set to Event for async (no response req.)
+			# 	LogType='None',
+			# 	Payload=json.dumps(publishEvent)
+			# )
+			returnValue = publishEvent
+
+			
 		else:
 			# get top 3 cards from deck
 			deck = currentGame['deck']
@@ -116,18 +151,18 @@ def lambda_function(event, context=None):
 			currentGame['deck'] = deck
 			currentGame['chancellorID'] = chancellorID 
 			currentGame['electionTracker'] = 0
-
+			
 			# update game table
 			# remove cards from deck; update previous office
 			resp = gameTable.update_item(
-		        Key={"game": currentGameID},
-		        UpdateExpression="set deck = :dk, previousPresidentID = :prevPID, previousChancellorID = :prevCID, policiesInHand = :policies, electionTracker=:et",
-		        ExpressionAttributeValues={
-		            ':dk' : currentGame['deck'],
-		            ':prevPID': currentGame['currentPresidentID'],
-		            ':prevCID': currentGame['chancellorID'],
-		            ':policies': currentGame['policiesInHand'],
-		            ':et': currentGame['electionTracker']
+				Key={"game": currentGameID},
+				UpdateExpression="set deck = :dk, previousPresidentID = :prevPID, previousChancellorID = :prevCID, policiesInHand = :policies, electionTracker=:et",
+				ExpressionAttributeValues={
+					':dk' : currentGame['deck'],
+					':prevPID': currentGame['currentPresidentID'],
+					':prevCID': currentGame['chancellorID'],
+					':policies': currentGame['policiesInHand'],
+					':et': currentGame['electionTracker']
 			})
 
 			# set return value to SNS topic
@@ -137,15 +172,29 @@ def lambda_function(event, context=None):
 			returnValue['gameID'] = currentGameID
 			returnValue['presidentID'] = str(currentGame['currentPresidentID'])
 
-			
+			publishEvent = {
+				'subject' : 'voting_sns',
+				'payload' : returnValue
+			}
+
+			# MARKER CHANGE FOR LAMBDA DEPLOY
+			# response = lambdaClient.invoke(
+			# 	FunctionName='secret-hitler-sns-publish',
+			# 	InvocationType='Event', # set to Event for async (no response req.)
+			# 	LogType='None',
+			# 	Payload=json.dumps(publishEvent)
+			# )
+	
+	
 	else:
 		currentPresidentID = currentGame['currentPresidentID']
 		numberOfPlayers = currentGame['numberOfPlayers']
 		listOfPlayers = currentGame['players']
 		currentGame['currentPresidentID'] = next_president(currentPresidentID, numberOfPlayers, listOfPlayers)
 		currentGame['electionTracker'] = int(currentGame['electionTracker']) + 1
-
-
+		currentGame['currentChancellorID'] = 'Null'
+		
+		
 		if currentGame['electionTracker'] == 3:
 			print('flip over top card then assign new president')
 			# enact top card from deck
@@ -158,21 +207,21 @@ def lambda_function(event, context=None):
 				currentGame['numberOfFacistPoliciesEnacted'] = currentGame['numberOfFacistPoliciesEnacted'] + 1
 				if currentGame['numberOfFacistPoliciesEnacted'] == 5:
 					currentGame['vetoPower'] = True
-
+					
 			# Eliminate election restriction
 			currentGame['previousPresidentID'] = "Null"
 			currentGame['previousChancellorID'] = "Null"
-
+			
 			resp = gameTable.update_item(
 				Key={"game": currentGameID},
-		        UpdateExpression="set numberOfLiberalPoliciesEnacted = :lp, numberOfFacistPoliciesEnacted = :fp, deck = :dk, vetoPower = :vp, previousPresidentID=:prevPID, previousChancellorID=:prevCID",
-		        ExpressionAttributeValues={
-		            ':lp' : currentGame['numberOfLiberalPoliciesEnacted'] ,
-		            ':fp': currentGame['numberOfFacistPoliciesEnacted'],
-		            ':dk': currentGame['deck'],
-		            ':vp': currentGame['vetoPower'],
-		            ':prevPID': currentGame['previousPresidentID'],
-		            ':prevCID': currentGame['previousChancellorID']
+				UpdateExpression="set numberOfLiberalPoliciesEnacted = :lp, numberOfFacistPoliciesEnacted = :fp, deck = :dk, vetoPower = :vp, previousPresidentID=:prevPID, previousChancellorID=:prevCID",
+				ExpressionAttributeValues={
+					':lp' : currentGame['numberOfLiberalPoliciesEnacted'] ,
+					':fp': currentGame['numberOfFacistPoliciesEnacted'],
+					':dk': currentGame['deck'],
+					':vp': currentGame['vetoPower'],
+					':prevPID': currentGame['previousPresidentID'],
+					':prevCID': currentGame['previousChancellorID']
 			})
 			currentGame['electionTracker'] = 0
 
@@ -180,24 +229,27 @@ def lambda_function(event, context=None):
 		# update database table with new president id, election tracker
 		resp = gameTable.update_item(
 				Key={"game": currentGameID},
-		        UpdateExpression="set currentPresidentID = :cp, electionTracker = :et",
-		        ExpressionAttributeValues={
-		            ':cp' : currentGame['currentPresidentID'],
-		            ':et':  currentGame['electionTracker']
+				UpdateExpression="set electionTracker = :et, currentChancellorID = :cc",
+				ExpressionAttributeValues={
+					':et':  currentGame['electionTracker'],
+					':cc' : currentGame['currentChancellorID']
 			})
 
+		nextTurnEvent = {
+			'game_id' : currentGameID
+		}
 
-		returnValue['presidentID'] = str(currentGame['currentPresidentID'])
-		returnValue['previousPresidentID'] = currentGame['previousPresidentID']
-		returnValue['previousChancellorID'] = currentGame['previousChancellorID']
-		returnValue['electionTracker'] = int(currentGame['electionTracker'])
-		returnValue['listOfPlayers'] = currentGame['players']
-		returnValue['gameID'] = currentGameID
+		response = lambdaClient.invoke(
+			FunctionName='secret-hitler-next-turn',
+			InvocationType='RequestResponse', # MARKER CHANGE FOR LAMBDA DEPLOYMENT
+			LogType='None',
+			Payload=json.dumps(nextTurnEvent)
+		)
+
+		returnValue = response
 
 	remove_previous_votes(playerTableName, currentGameID)
+
 	return returnValue
-
-
-
-
-
+	
+	

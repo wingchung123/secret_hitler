@@ -40,8 +40,10 @@ def test_policy_peek():
 	currentGame = get_game_info(gameID)
 
 	assert currentGame['deck'] == ['L','F','F','L','F']
+	assert currentGame['executiveAction'] == 'Null'
+	assert currentGame['executiveActionResult'] == str(['L','F','F'])
 
-	assert returnData == ['L','F','F']
+	assert returnData == str(['L','F','F'])
 
 
 
@@ -97,7 +99,10 @@ def test_investigate_loyalty_facist():
 	}
 
 	returnData = lambda_function(event)
+	currentGame = get_game_info(gameID)
 
+	assert currentGame['executiveAction'] == 'Null'
+	assert currentGame['executiveActionResult'] == 'Facist'
 
 	assert returnData == 'Facist'
 
@@ -154,7 +159,10 @@ def test_investigate_loyalty_liberal():
 	}
 
 	returnData = lambda_function(event)
+	currentGame = get_game_info(gameID)
 
+	assert currentGame['executiveAction'] == 'Null'
+	assert currentGame['executiveActionResult'] == 'Liberal'
 
 	assert returnData == 'Liberal'
 
@@ -211,6 +219,10 @@ def test_investigate_loyalty_hitler_return_facist():
 	}
 
 	returnData = lambda_function(event)
+	currentGame = get_game_info(gameID)
+
+	assert currentGame['executiveAction'] == 'Null'
+	assert currentGame['executiveActionResult'] == 'Facist'
 
 	assert returnData == 'Facist'
 
@@ -268,9 +280,14 @@ def test_execution_hitler():
 	}
 
 	returnData = lambda_function(event)
+	currentGame = get_game_info(gameID)
+
+	assert currentGame['executiveAction'] == 'Null'
+	assert currentGame['executiveActionResult'] == 'Hitler'
+	assert currentGame['endGameStatus'] == 'L2'
 
 
-	assert returnData == 'Liberals Win; Hitler is killed.'
+	assert returnData == 'Hitler'
 
 
 def test_execution_not_hitler():
@@ -336,79 +353,7 @@ def test_execution_not_hitler():
 
 	assert playerInfo['isAlive'] == False
 
+	assert currentGame['executiveAction'] == 'Null'
+	assert currentGame['executiveActionResult'] == 'not Hitler'
 
-
-
-
-# def test_vote_passes_chancellor_not_hitler():
-# 	gameID = 'test_vote_passes_chancellor_not_hitler'
-# 	# setup test case scenario
-# 	if not TEST_CASES_EXISTS_IN_TABLE:
-# 		# test case items
-# 		number_of_players = 5
-# 		list_of_players = []
-# 		gameTable = dynamodb.Table('secret-hitler-test')
-# 		playersTable = dynamodb.Table('secret-hitler-players-test')
-# 		gameTablePlayers = []
-
-
-
-# 		for i in range(0,number_of_players-3):
-
-# 			playerID = i + 1
-# 			playerName = "test" + str(playerID)
-# 			if (playerID == 2):
-# 				list_of_players.append(create_test_player(playerID=str(playerID), playerName=playerName, gameID=gameID, vote=True, role='H'))
-# 			else:
-# 				list_of_players.append(create_test_player(playerID=str(playerID), playerName=playerName, gameID=gameID, vote=True))
-# 			gameTablePlayers.append({"playerID":playerID, "playerName": playerName})
-
-# 		for i in range(number_of_players-3,number_of_players):
-
-# 			playerID = i + 1
-# 			playerName = "test" + str(playerID)
-# 			list_of_players.append(create_test_player(playerID=str(playerID), playerName=playerName, gameID=gameID, vote=True))
-# 			gameTablePlayers.append({"playerID":playerID, "playerName": playerName})
-
-
-# 		# batch writer to set up test cases
-# 		with playersTable.batch_writer() as batch:
-# 			for player in list_of_players:
-# 				batch.put_item(Item=player)
-
-
-# 		gameTestCase = create_test_game(gameID=gameID,numberOfPlayers=5,players=gameTablePlayers,
-# 			numberOfFacistPoliciesEnacted=3,currentPresidentID='3',electionTracker=2,
-# 			deck=['L','F','F','L','F'])
-
-# 		gameTable = dynamodb.Table('secret-hitler-test')
-# 		resp = gameTable.put_item(Item=gameTestCase)
-
-
-# 	event = {
-# 		'game_id': gameID,
-# 		'chancellor_id': '4',
-# 		'president_id': '3'
-
-# 	}
-
-# 	snsData = lambda_function(event)
-
-# 	currentGame = get_game_info(gameID)
-
-# 	player = get_player_info(gameID, '1')
-
-# 	assert 'vote' not in player
-
-# 	assert currentGame['currentPresidentID'] == '3'
-# 	assert currentGame['electionTracker'] == 0
-# 	assert currentGame['previousPresidentID'] == '3'
-# 	assert currentGame['previousChancellorID'] == '4'
-# 	assert currentGame['deck'] == ['L','F']
-# 	assert currentGame['policiesInHand'] == ['L','F','F']
-
-
-# 	assert snsData['policiesInHand'] == currentGame['policiesInHand']
-# 	assert snsData['chancellorID'] == currentGame['previousChancellorID']
-# 	assert snsData['vetoPower'] == currentGame['vetoPower']
 

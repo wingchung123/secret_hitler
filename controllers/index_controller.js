@@ -29,7 +29,6 @@ exports.create_game = function(req, res, next){
 		if(api_resp.statusCode == 200){
 			res.cookie('gameID', api_resp.data.game_id, { maxAge: helper.max_cookie_age})
 			helper.delete_player_cookies(req,res)
-			helper.delete_game_created_cookies(req,res)
 			res.redirect('createPlayer')
 		} else {
 			//Shouldn't happen except for server error
