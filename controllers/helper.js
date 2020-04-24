@@ -119,7 +119,7 @@ exports.get_ip_address = function validate_game_id(req, res, next){
 		console.log("getting meta-data...")
 		ip_address =  body
 		console.log(ip_address)
-		res.locals.ip_address = typeof ip_address == 'undefined' ? 'localhost' : ip_address // 192.168.99.100 - local docker
+		res.locals.ip_address = typeof ip_address == 'undefined' ? '192.168.99.100' : ip_address // 192.168.99.100 - local docker // localhost:3000
 
 		next()
 	});
