@@ -734,7 +734,7 @@
       let thisGameID = getCookieValue('gameID')
       let messageGameID = data.message.gameID
       if (messageGameID == thisGameID){
-
+        $('#fakeLoad').modal('show')
         snsParseEvent(data)
 
         reloadGameState()
@@ -747,6 +747,7 @@
     })
 
     socket.on('new_player', function(message){
+      $('#fakeLoad').modal('show')
       let thisGameID = getCookieValue('gameID')
       if (message.gameID == thisGameID){
 
@@ -833,6 +834,7 @@
 
         case 'locked_in':
           // enable voting button
+          $('#fakeLoad').modal('show')
           console.log('within locked_in function')
 
           setCookieValue('chancellorID', data.chancellorID)
@@ -1255,7 +1257,7 @@
       $('#specialElectionSubmit').click(function() {
         // console.log($('#selectPlayer').val())
         //{executive_action: string, game_id: string}
-        let data = {"game_id" : getCookieValue('gameID'), "player_id" : $('#selectPlayer').val()}
+        let data = {"game_id" : getCookieValue('gameID'), "president_id" : $('#selectPlayer').val().toString()}
         console.log(data)
         fetch('next_turn',
         {
