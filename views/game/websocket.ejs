@@ -312,7 +312,10 @@
     console.log("page reloaded...")
     standardLoad()
 
-    if (chancellorID == 'Null'){
+    if (executiveAction != 'Null') {
+      executive_action_event()
+
+    } else if (chancellorID == 'Null'){
       console.log('time to select a chancellor...')
       next_turn_event()
     } else if (policiesInHand != 'Null') {
@@ -330,9 +333,6 @@
 
       }
       
-    } else if (executiveAction != 'Null') {
-
-       executive_action_event()
     } else {
       // voting time
       console.log('voting time')
