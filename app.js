@@ -16,6 +16,8 @@ var snsRouter = require('./routes/sns');
 
 var app = express();
 
+app.use(require('express-status-monitor')());
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
