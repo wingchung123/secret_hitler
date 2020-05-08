@@ -15,8 +15,8 @@ var snsRouter = require('./routes/sns');
 
 
 var app = express();
-
-app.use(require('express-status-monitor')());
+const monitorSocket = require('socket.io')(3001)
+app.use(require('express-status-monitor')({websocket: monitorSocket, port:3001}));
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
