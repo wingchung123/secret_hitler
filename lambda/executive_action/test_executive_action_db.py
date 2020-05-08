@@ -45,6 +45,41 @@ def test_policy_peek():
 
 	assert returnData == str(['L','F','F'])
 
+def test_policy_peek_not_enough_cards():
+	gameID = 'test_policy_peek_not_enough_cards'
+	# setup test case scenario
+	if not TEST_CASES_EXISTS_IN_TABLE:
+		# test case items
+		number_of_players = 5
+		gameTable = dynamodb.Table('secret-hitler-test')
+
+		gameTestCase = create_test_game(gameID=gameID,numberOfPlayers=number_of_players,
+			numberOfFacistPoliciesEnacted=3,currentPresidentID='3',electionTracker=2,
+			deck=['L'], discard=['F', 'L'])
+
+		gameTable = dynamodb.Table('secret-hitler-test')
+		resp = gameTable.put_item(Item=gameTestCase)
+
+
+	event = {
+		'executive_action': 'policy_peek',
+		'game_id' : gameID
+	}
+
+	returnData = lambda_function(event)
+
+	currentGame = get_game_info(gameID)
+
+	assert currentGame['deck'].count('L') == 2
+	assert currentGame['deck'].count('F') == 1
+	assert currentGame['discard'] == []
+	assert currentGame['executiveAction'] == 'Null'
+	assert currentGame['executiveActionResult'].count('L') == 2
+	assert currentGame['executiveActionResult'].count('F') == 1
+
+	assert returnData.count('L') == 2
+	assert returnData.count('F') == 1
+
 
 
 def test_investigate_loyalty_facist():

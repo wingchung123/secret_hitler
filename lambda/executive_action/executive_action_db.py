@@ -2,6 +2,7 @@ import boto3
 from boto3.dynamodb.conditions import Key, Attr
 import json
 import pprint
+import random
 pp = pprint.PrettyPrinter(indent=4)
 
 import sys
@@ -40,6 +41,21 @@ def lambda_function(event, context=None):
 
 
 	if executiveAction == 'policy_peek':
+
+		if len(currentGame['deck']) <= 2:
+			discard = currentGame['discard']
+			random.shuffle(discard)
+
+			currentGame['deck'].extend(discard)
+			currentGame['discard'] = []
+
+			resp = gameTable.update_item(
+			    Key={"game": currentGameID},
+			    UpdateExpression="set deck = :deck, discard = :discard",
+			    ExpressionAttributeValues={
+			        ':deck' : currentGame['deck'],
+			        ':discard' : currentGame['discard']
+			})
 
 		currentGame['executiveActionResult'] = str(currentGame['deck'][0:3])
 
