@@ -1,4 +1,5 @@
 <% include partial/header %>
+<% include releaseNotes %>
 
 	<body>
 		<div>
@@ -48,5 +49,7 @@
 				$('#createGameButton').removeAttr("disabled")
 			}
 		})
+
+		$('#releaseNotesModal').modal('show')
 	})
 </script>

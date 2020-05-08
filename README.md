@@ -244,3 +244,6 @@ Web Reload States:
 
 
 
+- Policy peek doesn't work if deck has < 3 cards
+- refresh on policy peek breaks
+

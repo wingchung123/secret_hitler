@@ -1,4 +1,5 @@
 <% include partial/header %>
+<% include forceJoinUnlock %>
 
 	<body>
 
@@ -35,7 +36,12 @@
 			</div>
 			<input type="submit" value="Submit" class="btn btn-outline-primary">
 			</form>
-			<div class="">
+			<br>
+			<div class="row my-3">
+				<div class="col-sm-4"></div>
+				<div class="col-sm-4"><button id="unlockForceJoinButton" class="btn btn-warning">Unlock Force Join</button></div>
+			</div>
+			<div id="forceJoin" class="d-none">
 				<form action="/forceJoin" method="post">
 				<div class="row my-3">
 					<div class="col-sm-4"></div>
@@ -51,3 +57,20 @@
 	</body>
 </html> 
 <!-- test -->
+<script type="text/javascript">
+	$(document).ready(function (){
+		$('#unlockForceJoinButton').click(function(){
+			$('#forceJoinModal').modal('show')
+		})
+
+		$('#forceJoinModalSubmit').click(function() {
+			if ($('#unlockPassword').val() == 'hecret sitler'){
+				$('#forceJoinModal').modal('hide')
+				$('#forceJoin').removeClass('d-none')
+			} else {
+				$('#incorrectPassword').html('Incorrect Password')
+			}
+		})
+
+	})
+</script>

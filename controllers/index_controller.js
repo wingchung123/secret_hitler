@@ -1,10 +1,21 @@
 var request = require('request')
 var cookieParser = require('cookie-parser')
 var helper = require('./helper')
+var path = require("path");
+var fs = require('fs')
 
 
 exports.index_page = function(req, res, next) {
 	res.render('index', {game_id: 'Null'});
+};
+
+exports.game_rules = function(req, res, next) {
+	var gameRules = "../public/resources/Secret_Hitler_Rules.pdf";
+	fs.readFile(path.resolve(__dirname, gameRules), function (err,data){
+		console.log(err)
+		res.contentType("application/pdf");
+		res.send(data);
+	});
 };
 
 exports.create_player_page = function(req, res, next) {

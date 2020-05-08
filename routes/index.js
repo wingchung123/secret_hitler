@@ -8,6 +8,7 @@ var urlencodedParser = bodyParser.urlencoded({ extended: false })
 let index_c = require('../controllers/index_controller')
 /* GET home page. */
 router.get('/', index_c.index_page);
+router.get('/gameRules', index_c.game_rules);
 router.post('/createGame', urlencodedParser, index_c.create_game)
 
 
