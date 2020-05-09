@@ -64,7 +64,7 @@
 		})
 
 		$('#forceJoinModalSubmit').click(function() {
-			if ($('#unlockPassword').val() == 'hecret sitler'){
+			if ($('#unlockPassword').val().trim() == 'hecret sitler'){
 				$('#forceJoinModal').modal('hide')
 				$('#forceJoin').removeClass('d-none')
 			} else {
