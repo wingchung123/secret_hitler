@@ -3,8 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "pm2 start ./bin/www --name secret-hitler > pm2_app.log 2> pm2_err.log",
-    "start-dev" : "nodemon ./bin/www > nodemon_app.log 2> nodemon_error.log"
+    "start": "pm2-runtime start ecosystem.config.js",
+    "start-dev": "nodemon ./bin/www"
   },
   "dependencies": {
     "aws-sdk": "^2.652.0",

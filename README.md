@@ -32,7 +32,7 @@ Dynamodb Docs: https://boto3.amazonaws.com/v1/documentation/api/latest/reference
 
 `docker build -t wing/secret-hitler .` build image
 
-`docker run -p 49160:3000 -p 5000:5000 --name test-env -d wing/secret-hitler ` run image on container; -d to run in background, -p to publish port & link to machine port
+`docker run -p 49160:3000 -p 3001:3001 --name test-env -d wing/secret-hitler ` run image on container; -d to run in background, -p to publish port & link to machine port
 
 `docker ps || docker container ls`
 
@@ -47,7 +47,9 @@ Dynamodb Docs: https://boto3.amazonaws.com/v1/documentation/api/latest/reference
 
 ## Useful node commands
 
-`npm start`
+`npm start` (production with pm2)
+
+`npm run start-dev` (dev with Nodemon)
 
 `npm install <package-name> --save` (replace --save with --save-dev for dev packages)
 
@@ -247,3 +249,12 @@ Web Reload States:
 - Policy peek doesn't work if deck has < 3 cards
 - refresh on policy peek breaks
 
+
+
+Dillon
+Aurko
+Bryan Ahn
+Bryan Barrett
+Sarah Lyons
+Jack
+Matt
