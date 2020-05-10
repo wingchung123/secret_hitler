@@ -6,4 +6,4 @@ COPY . .
 
 EXPOSE 3000
 EXPOSE 3001
-CMD ["npm", "start”, “>”, “app.log”, “2”, “>”, “error.log”]
+CMD ["npm", "start",">","npm_app.log", "2>", "npm_error.log"]
