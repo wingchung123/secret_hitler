@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "if[[$NODE_ENV == 'production']]; then node ./bin/www > app.log 2> error.log; else nodemon ./bin/www > app.log 2> error.log; fi;"
+    "start": "pm2 start ./bin/www --name secret-hitler > pm2_app.log 2> pm2_err.log",
+    "start-dev" : "nodemon ./bin/www > nodemon_app.log 2> nodemon_error.log"
   },
   "dependencies": {
     "aws-sdk": "^2.652.0",
