@@ -162,6 +162,10 @@ exports.get_game_details = function get_game_details(req, res, next){
 			res.cookie('electionTracker', api_resp.data.electionTracker, { maxAge: max_cookie_age})
 			res.cookie('chancellorID', api_resp.data.currentChancellorID, { maxAge: max_cookie_age})
 			res.cookie('executiveAction', api_resp.data.executiveAction, { maxAge: max_cookie_age})
+			if (api_resp.data.currentPresidentID.toString() == req.cookies.playerID.toString() ){
+				console.log(decodeURIComponent(api_resp.data.executiveActionResult))
+				res.cookie('executiveActionResult', decodeURIComponent(api_resp.data.executiveActionResult), { maxAge: max_cookie_age})
+			}
 			if (api_resp.data.policiesInHand.length > 0) {
 
 				if ( (api_resp.data.currentPresidentID.toString() == req.cookies.playerID.toString() && api_resp.data.policiesInHand.length == 3) ||

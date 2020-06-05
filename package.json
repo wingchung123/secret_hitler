@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "pm2-runtime start ecosystem.config.js",
-    "start-dev": "nodemon ./bin/www"
+    "dev": "nodemon ./bin/www"
   },
   "dependencies": {
     "aws-sdk": "^2.652.0",

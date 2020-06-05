@@ -191,7 +191,7 @@ def test_vote_passes_check_db_update():
 			for player in list_of_players:
 				batch.put_item(Item=player)
 
-		gameTestCase = create_test_game(gameID=gameID,numberOfPlayers=5,currentPresidentID=str(1), deck=['L','F','F','L','L'])
+		gameTestCase = create_test_game(gameID=gameID,numberOfPlayers=5,currentPresidentID=str(1), deck=['L','F','F','L','F'])
 
 		gameTable = dynamodb.Table('secret-hitler-test')
 		resp = gameTable.put_item(Item=gameTestCase)
@@ -209,7 +209,7 @@ def test_vote_passes_check_db_update():
 	player = get_player_info(gameID, '1')
 
 	assert 'vote' not in player
-	assert currentGame['deck'] == ['L', 'L']
+	assert currentGame['deck'] == ['L', 'F']
 	assert currentGame['policiesInHand'] == ['L', 'F', 'F']
 	assert currentGame['previousPresidentID'] == '1'
 	assert currentGame['previousChancellorID'] == '2'
@@ -628,8 +628,145 @@ def test_vote_fails_at_3_top_policy_enables_veto_power():
 	assert currentGame['previousChancellorID'] == "Null"
 	assert currentGame['currentChancellorID'] == 'Null'
 
+def test_vote_fails_at_3_top_policy_facists_win():
+	gameID = 'test_vote_fails_at_3_top_policy_facists_win'
+	# setup test case scenario
+	if not TEST_CASES_EXISTS_IN_TABLE:
+		# test case items
+		number_of_players = 5
+		list_of_players = []
+		gameTable = dynamodb.Table('secret-hitler-test')
+		playersTable = dynamodb.Table('secret-hitler-players-test')
+		gameTablePlayers = []
 
 
+
+		for i in range(0,number_of_players-3):
+
+			playerID = i + 1
+			playerName = "test" + str(playerID)
+			if (playerID == 2):
+				list_of_players.append(create_test_player(playerID=str(playerID), playerName=playerName, gameID=gameID, vote=False, role='H'))
+			else:
+				list_of_players.append(create_test_player(playerID=str(playerID), playerName=playerName, gameID=gameID, vote=False))
+			gameTablePlayers.append({"playerID":playerID, "playerName": playerName})
+
+		for i in range(number_of_players-3,number_of_players):
+
+			playerID = i + 1
+			playerName = "test" + str(playerID)
+			list_of_players.append(create_test_player(playerID=str(playerID), playerName=playerName, gameID=gameID, vote=False))
+			gameTablePlayers.append({"playerID":playerID, "playerName": playerName})
+
+
+		# batch writer to set up test cases
+		with playersTable.batch_writer() as batch:
+			for player in list_of_players:
+				batch.put_item(Item=player)
+
+
+		gameTestCase = create_test_game(gameID=gameID,numberOfPlayers=5,players=gameTablePlayers,
+			numberOfFacistPoliciesEnacted=5,numberOfLiberalPoliciesEnacted=2,
+			currentPresidentID='5',electionTracker=2,deck=['F','L','L','L','L'],vetoPower=True)
+
+		gameTable = dynamodb.Table('secret-hitler-test')
+		resp = gameTable.put_item(Item=gameTestCase)
+
+
+	event = {
+		'game_id': gameID,
+		'chancellor_id': '4'
+
+	}
+
+	snsData = lambda_function(event)
+
+	currentGame = get_game_info(gameID)
+	
+	player = get_player_info(gameID, '1')
+
+	assert 'vote' not in player
+
+	assert currentGame['currentPresidentID'] == '1'
+	assert currentGame['electionTracker'] == 0
+	assert currentGame['numberOfFacistPoliciesEnacted'] == 6
+	assert currentGame['numberOfLiberalPoliciesEnacted'] == 2
+	assert currentGame['deck'] == ['L','L','L','L']
+	assert currentGame['vetoPower'] == True
+	assert currentGame['previousPresidentID'] == "Null"
+	assert currentGame['previousChancellorID'] == "Null"
+	assert currentGame['currentChancellorID'] == 'Null'
+	assert currentGame['endGameStatus'] == 'F1'
+
+def test_vote_fails_at_3_top_policy_liberals_win():
+	gameID = 'test_vote_fails_at_3_top_policy_facists_win'
+	# setup test case scenario
+	if not TEST_CASES_EXISTS_IN_TABLE:
+		# test case items
+		number_of_players = 5
+		list_of_players = []
+		gameTable = dynamodb.Table('secret-hitler-test')
+		playersTable = dynamodb.Table('secret-hitler-players-test')
+		gameTablePlayers = []
+
+
+
+		for i in range(0,number_of_players-3):
+
+			playerID = i + 1
+			playerName = "test" + str(playerID)
+			if (playerID == 2):
+				list_of_players.append(create_test_player(playerID=str(playerID), playerName=playerName, gameID=gameID, vote=False, role='H'))
+			else:
+				list_of_players.append(create_test_player(playerID=str(playerID), playerName=playerName, gameID=gameID, vote=False))
+			gameTablePlayers.append({"playerID":playerID, "playerName": playerName})
+
+		for i in range(number_of_players-3,number_of_players):
+
+			playerID = i + 1
+			playerName = "test" + str(playerID)
+			list_of_players.append(create_test_player(playerID=str(playerID), playerName=playerName, gameID=gameID, vote=False))
+			gameTablePlayers.append({"playerID":playerID, "playerName": playerName})
+
+
+		# batch writer to set up test cases
+		with playersTable.batch_writer() as batch:
+			for player in list_of_players:
+				batch.put_item(Item=player)
+
+
+		gameTestCase = create_test_game(gameID=gameID,numberOfPlayers=5,players=gameTablePlayers,
+			numberOfFacistPoliciesEnacted=5,numberOfLiberalPoliciesEnacted=4,
+			currentPresidentID='5',electionTracker=2,deck=['L','F','L','L','L'],vetoPower=True)
+
+		gameTable = dynamodb.Table('secret-hitler-test')
+		resp = gameTable.put_item(Item=gameTestCase)
+
+
+	event = {
+		'game_id': gameID,
+		'chancellor_id': '4'
+
+	}
+
+	snsData = lambda_function(event)
+
+	currentGame = get_game_info(gameID)
+	
+	player = get_player_info(gameID, '1')
+
+	assert 'vote' not in player
+
+	assert currentGame['currentPresidentID'] == '1'
+	assert currentGame['electionTracker'] == 0
+	assert currentGame['numberOfFacistPoliciesEnacted'] == 5
+	assert currentGame['numberOfLiberalPoliciesEnacted'] == 5
+	assert currentGame['deck'] == ['F','L','L','L']
+	assert currentGame['vetoPower'] == True
+	assert currentGame['previousPresidentID'] == "Null"
+	assert currentGame['previousChancellorID'] == "Null"
+	assert currentGame['currentChancellorID'] == 'Null'
+	assert currentGame['endGameStatus'] == 'L1'
 
 # def test_vote_resets_afterwards():
 

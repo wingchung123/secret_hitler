@@ -209,6 +209,58 @@
     }
   }
 
+  function executiveActionResultPolicy(executiveActionResult){
+    // change the img src to reflect next 3 policies
+    executiveActionResult = executiveActionResult.replace(/\[/g, '')
+    executiveActionResult = executiveActionResult.replace(/\'/g, '')
+    executiveActionResult = executiveActionResult.replace(/\\/g, '')
+    executiveActionResult = executiveActionResult.replace(/\]/g, '')
+    console.log(executiveActionResult)
+    executiveActionResult = executiveActionResult.split(',')
+
+    for (let i = 0; i < executiveActionResult.length; i++) {
+      let nextPolicy = executiveActionResult[i]
+      console.log("this is inside for loop, nextPolicy: " + nextPolicy)
+      let policyPeekSelector = '#policyPeek' + (i + 1)
+      console.log("this is inside for loop, policyPeekSelector: " + policyPeekSelector)
+      let policyPeekImageSRC = ""
+      if (nextPolicy.trim() == 'L') {
+        policyPeekImageSRC = '/images/liberal_policy_rounded.png'
+      } else if (nextPolicy.trim() == 'F') {
+        policyPeekImageSRC = '/images/facist_policy_rounded.png'
+      }
+      $(policyPeekSelector).attr('src',policyPeekImageSRC)
+    }
+    $('#executiveActionResultModal').modal('show')
+    $('#executiveActionModalBodyPolicyPeek').removeClass('d-none')
+    $('#executiveActionModalBodyInvestigateLoyalty').addClass('d-none')
+    $('#executiveActionModalBodyExecution').addClass('d-none')
+    $('#executiveActionResultSubmit').removeClass('d-none')
+  }
+
+  function executiveActionResultInvestigate(executiveActionResult){
+    let membershipSRC = ""
+    if(executiveActionResult == 'Liberal') {
+      membershipSRC = "/images/party_membership_liberal.png"
+    } else if (executiveActionResult == 'Facist'){
+      membershipSRC = "/images/party_membership_facist.png"
+    }
+
+    $('#investigateMembershipResult').attr('src', membershipSRC)
+    $('#investigatedPlayer').html(function(index,currentcontent) {
+        return "<i>" + $( "#selectPlayer option:selected" ).text() + "</i>"
+    })
+
+    $("#selectPlayer option:selected").prop("selected", false)
+    $('#investigateOrExecutionSubmit').addClass('d-none')
+    
+    $('#executiveActionResultModal').modal('show')
+    $('#executiveActionModalBodyInvestigateLoyalty').removeClass('d-none')
+    $('#executiveActionModalBodyPolicyPeek').addClass('d-none')
+    $('#executiveActionModalBodyExecution').addClass('d-none')
+    $('#executiveActionResultSubmit').removeClass('d-none')
+  }
+
   //input {executive_action: string, game_id: string}
   function executiveAction(executiveActionData) {
     if (executiveActionData.executive_action == 'special_election') {
@@ -232,46 +284,10 @@
 
           if (executiveActionData.executive_action == "policy_peek"){
 
-            // change the img src to reflect next 3 policies
-            for (let i = 0; i < executiveActionResult.length; i++) {
-              let nextPolicy = executiveActionResult[i]
-              let policyPeekSelector = '#policyPeek' + (i + 1)
-              let policyPeekImageSRC = ""
-              if (nextPolicy == 'L') {
-                policyPeekImageSRC = '/images/liberal_policy_rounded.png'
-              } else if (nextPolicy == 'F') {
-                policyPeekImageSRC = '/images/facist_policy_rounded.png'
-              }
-              $(policyPeekSelector).attr('src',policyPeekImageSRC)
-            }
-            $('#executiveActionResultModal').modal('show')
-            $('#executiveActionModalBodyPolicyPeek').removeClass('d-none')
-            $('#executiveActionModalBodyInvestigateLoyalty').addClass('d-none')
-            $('#executiveActionModalBodyExecution').addClass('d-none')
-            $('#executiveActionResultSubmit').removeClass('d-none')
-
+            executiveActionResultPolicy(executiveActionResult)
 
           } else if (executiveActionData.executive_action == "investigate_loyalty"){
-            let membershipSRC = ""
-            if(executiveActionResult == 'Liberal') {
-              membershipSRC = "/images/party_membership_liberal.png"
-            } else if (executiveActionResult == 'Facist'){
-              membershipSRC = "/images/party_membership_facist.png"
-            }
-
-            $('#investigateMembershipResult').attr('src', membershipSRC)
-            $('#investigatedPlayer').html(function(index,currentcontent) {
-                return "<i>" + $( "#selectPlayer option:selected" ).text() + "</i>"
-            })
-
-            $("#selectPlayer option:selected").prop("selected", false)
-            $('#investigateOrExecutionSubmit').addClass('d-none')
-            
-            $('#executiveActionResultModal').modal('show')
-            $('#executiveActionModalBodyInvestigateLoyalty').removeClass('d-none')
-            $('#executiveActionModalBodyPolicyPeek').addClass('d-none')
-            $('#executiveActionModalBodyExecution').addClass('d-none')
-            $('#executiveActionResultSubmit').removeClass('d-none')
+            executiveActionResultInvestigate(executiveActionResult)
 
           } else if (executiveActionData.executive_action == "execution"){
             // if it's execution, it would either call next turn or end game
@@ -308,12 +324,25 @@
     let policiesInHand = getCookieValue('policiesInHand')
     let locked_in = getCookieValue('locked_in')
     let executiveAction = getCookieValue('executiveAction') // chancellor ID is locked in, enable voting
+    let executiveActionResult = getCookieValue('executiveActionResult')
 
     console.log("page reloaded...")
     standardLoad()
 
     if (executiveAction != 'Null') {
       executive_action_event()
+
+    } else if (executiveActionResult != 'Null') {
+      if (amIPresident()) {
+        executiveActionResult = decodeURIComponent(executiveActionResult)
+        console.log("this is ea result: " + executiveActionResult)
+        if (executiveActionResult[0] == '[') {
+          executiveActionResultPolicy(executiveActionResult)
+        } else {
+          executiveActionResultInvestigate(executiveActionResult)
+        }
+      }
+
 
     } else if (chancellorID == 'Null'){
       console.log('time to select a chancellor...')
@@ -619,6 +648,7 @@
           $('#investigateOrExecutionSubmit').addClass('d-none')
           $('#executiveActionSubmit').removeClass('d-none')
           $('#investigateOrExecutionSubmit').prop("disabled",true)
+
         } else {
           let listOfPlayers = generatePlayersList()
           $('#selectPlayer').html(function(index,currentcontent){

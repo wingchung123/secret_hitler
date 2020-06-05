@@ -203,10 +203,25 @@ def lambda_function(event, context=None):
 
 			if topCard == 'L':
 				currentGame['numberOfLiberalPoliciesEnacted'] = currentGame['numberOfLiberalPoliciesEnacted'] + 1
+				if currentGame['numberOfLiberalPoliciesEnacted'] == 5:
+					currentGame['endGameStatus'] = 'L1'
 			else:
 				currentGame['numberOfFacistPoliciesEnacted'] = currentGame['numberOfFacistPoliciesEnacted'] + 1
 				if currentGame['numberOfFacistPoliciesEnacted'] == 5:
 					currentGame['vetoPower'] = True
+				elif currentGame['numberOfFacistPoliciesEnacted'] == 6:
+					currentGame['endGameStatus'] = 'F1'
+
+			if (currentGame['numberOfFacistPoliciesEnacted'] == 6 or currentGame['numberOfLiberalPoliciesEnacted'] == 5):
+				print('End of Game')
+				event = {'end_game_status' : currentGame['endGameStatus'], 'game_id' : currentGameID}
+
+				# MARKER FOR LAMBDA DEPLOYMENT
+				response = lambdaClient.invoke(
+					FunctionName='secret-hitler-end-game',
+					InvocationType='Event',
+					LogType='None',
+					Payload=json.dumps(event));
 					
 			# Eliminate election restriction
 			currentGame['previousPresidentID'] = "Null"
@@ -214,14 +229,15 @@ def lambda_function(event, context=None):
 			
 			resp = gameTable.update_item(
 				Key={"game": currentGameID},
-				UpdateExpression="set numberOfLiberalPoliciesEnacted = :lp, numberOfFacistPoliciesEnacted = :fp, deck = :dk, vetoPower = :vp, previousPresidentID=:prevPID, previousChancellorID=:prevCID",
+				UpdateExpression="set numberOfLiberalPoliciesEnacted = :lp, numberOfFacistPoliciesEnacted = :fp, deck = :dk, vetoPower = :vp, previousPresidentID=:prevPID, previousChancellorID=:prevCID, endGameStatus=:endGame",
 				ExpressionAttributeValues={
 					':lp' : currentGame['numberOfLiberalPoliciesEnacted'] ,
 					':fp': currentGame['numberOfFacistPoliciesEnacted'],
 					':dk': currentGame['deck'],
 					':vp': currentGame['vetoPower'],
 					':prevPID': currentGame['previousPresidentID'],
-					':prevCID': currentGame['previousChancellorID']
+					':prevCID': currentGame['previousChancellorID'],
+					':endGame': currentGame['endGameStatus']
 			})
 			currentGame['electionTracker'] = 0
 
