@@ -333,8 +333,9 @@
     console.log('there is an executive action')
       executive_action_event()
 
-    } else if (executiveActionResult != 'Null' && typeof executiveActionResult != 'undefined') {
+    } else if (executiveActionResult != 'Null' && typeof executiveActionResult != 'undefined' && executiveActionResult != "") {
     console.log(executiveActionResult)
+    console.log(typeof executiveActionResult)
     console.log(executiveActionResult != 'Undefined')
       if (amIPresident()) {
         executiveActionResult = decodeURIComponent(executiveActionResult)
