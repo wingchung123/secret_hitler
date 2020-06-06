@@ -330,9 +330,12 @@
     standardLoad()
 
     if (executiveAction != 'Null') {
+    console.log('there is an executive action')
       executive_action_event()
 
-    } else if (executiveActionResult != 'Null') {
+    } else if (executiveActionResult != 'Null' && typeof executiveActionResult != 'undefined') {
+    console.log(executiveActionResult)
+    console.log(executiveActionResult != 'Undefined')
       if (amIPresident()) {
         executiveActionResult = decodeURIComponent(executiveActionResult)
         console.log("this is ea result: " + executiveActionResult)
